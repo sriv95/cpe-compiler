@@ -16,11 +16,13 @@ let bool = "True" | "False"
 let digit = ['0'-'9']
 let digits = digit+ | '-'digit+
 let floats = ('-'digit+ | digit+)'.'digit+
+let letter = ['a'-'z' 'A'-'Z']
 
 (** lexing rules **)
 rule read = parse
   | whitespace { read lexbuf }
   | symbols { Symbol(Lexing.lexeme lexbuf) }
   | digits { IntLit (int_of_string (Lexing.lexeme lexbuf)) }
+  | letter { CharLit (Lexing.lexeme_char lexbuf 0) }
   | eof { EOF }
   | _ { error (Lexing.lexeme lexbuf) lexbuf }
