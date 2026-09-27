@@ -15,6 +15,7 @@ let symbols = "+" | "*" | "/" | "//" | "%" | "<" | "<=" | ">=" | ">" | "==" | "!
 let bool = "True" | "False"
 let digit = ['0'-'9']
 let digits = digit+ | '-'digit+
+let float = digits'.'digit+
 
 (** lexing rules **)
 rule read = parse
