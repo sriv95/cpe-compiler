@@ -19,7 +19,7 @@ let digits = digit+ | '-'digit+
 (** lexing rules **)
 rule read = parse
   | whitespace { read lexbuf }
-  | "+" { Symbol("+") }
+  | symbols { Symbol(Lexing.lexeme lexbuf) }
   | digits { IntLit (int_of_string (Lexing.lexeme lexbuf)) }
   | eof { EOF }
   | _ { error (Lexing.lexeme lexbuf) lexbuf }
