@@ -11,8 +11,9 @@ let string_buf = Buffer.create 256
 (** regex patterns **)
 let line_terminator = '\r' | '\n' | "\r\n"
 let whitespace = (line_terminator | [' ' '\t'])+
+let symbols = "+' | "*" | "/" | "//" | "%" | "<" | "<=" | ">=" | ">" | "==" | "!=" | "="
 let digit = ['0'-'9']
-let digits = digit+
+let digits = digit+ | '-'digit+
 
 (** lexing rules **)
 rule read = parse
