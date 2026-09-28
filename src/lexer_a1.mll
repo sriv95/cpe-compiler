@@ -23,6 +23,7 @@ rule read = parse
   | whitespace { read lexbuf }
   | symbols { Symbol(Lexing.lexeme lexbuf) }
   | intLit { IntLit (int_of_string (Lexing.lexeme lexbuf)) }
+  | floatLit { FloatLit (float_of_string (Lexing.lexeme lexbuf))}
   | letter { CharLit (Lexing.lexeme_char lexbuf 0) }
   | eof { EOF }
   | _ { error (Lexing.lexeme lexbuf) lexbuf }
