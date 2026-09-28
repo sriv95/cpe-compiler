@@ -1,0 +1,1 @@
+alias lex='dune exec bin/lex.exe --'
