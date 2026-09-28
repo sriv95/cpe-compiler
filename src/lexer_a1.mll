@@ -17,6 +17,7 @@ let digit = ['0'-'9']
 let intLit = digit+ | '-'digit+
 let floatLit = ('-'digit+ | digit+)'.'digit+
 let letter = ['a'-'z' 'A'-'Z']
+let charLit = '\'' letter '\''
 
 (** lexing rules **)
 rule read = parse
@@ -24,6 +25,6 @@ rule read = parse
   | symbols { Symbol(Lexing.lexeme lexbuf) }
   | intLit { IntLit (int_of_string (Lexing.lexeme lexbuf)) }
   | floatLit { FloatLit (float_of_string (Lexing.lexeme lexbuf))}
-  | letter { CharLit (Lexing.lexeme_char lexbuf 0) }
+  | charLit { CharLit (Lexing.lexeme_char lexbuf 1) }
   | eof { EOF }
   | _ { error (Lexing.lexeme lexbuf) lexbuf }
