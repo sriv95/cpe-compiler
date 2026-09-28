@@ -14,8 +14,8 @@ let whitespace = (line_terminator | [' ' '\t'])+
 let symbols = "+" | "*" | "/" | "//" | "%" | "<" | "<=" | ">=" | ">" | "==" | "!=" | "=" | "&&" | "||" | "|" | "->" | "::" | "(" | ")" | ":"
 let boolLit = "True" | "False"
 let digit = ['0'-'9']
-let intLit = digit+ | '-'digit+
-let floatLit = ('-'digit+ | digit+)'.'digit+
+let intLit = digit+
+let floatLit = digit+'.'digit+
 let letter = ['a'-'z' 'A'-'Z']
 let escapeChars = '\\' ('\\' | '\'' | '"' | 'n' | 'r' | 't' | 'b')
 let charLit = '\'' (letter | escapeChars) '\''
