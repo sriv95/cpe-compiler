@@ -1,0 +1,2 @@
+# Dense mix of operators without spaces
+a+b*c<=d//e&&f!=g||h::i++j

@@ -1,0 +1,3 @@
+# Test Case 03: Boolean Literals
+True False
+if True then False else True

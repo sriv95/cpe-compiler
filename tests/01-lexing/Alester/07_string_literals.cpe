@@ -1,0 +1,5 @@
+# Test Case 07: Valid String Literals and Escapes
+""
+"Hello, world!"
+"Line 1\nLine 2\tTabbed"
+"Escaped quotes: \"hello\" and backslash: \\"
