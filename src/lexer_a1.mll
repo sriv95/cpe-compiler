@@ -11,6 +11,8 @@ let string_buf = Buffer.create 256
 (** regex patterns **)
 let line_terminator = '\r' | '\n' | "\r\n"
 let whitespace = (line_terminator | [' ' '\t'])+
+
+let keyword = "def" | "import" | "as" | "match" | "with" | "if" | "then" | "else" | "let" | "in" | "and" | "data" | "type"
 let symbols = "+" | "*" | "/" | "//" | "%" | "<" | "<=" | ">=" | ">" | "==" | "!=" | "=" | "&&" | "||" | "|" | "->" | "::" | "(" | ")" | ":"
 let boolLit = "True" | "False"
 let digit = ['0'-'9']
@@ -25,6 +27,7 @@ let comment = '#' [^ '\r' '\n']* (line_terminator | eof)
 rule read = parse
   | whitespace { read lexbuf }
   | comment { read lexbuf }
+  | keyword { Keyword(Lexing.lexeme lexbuf) }
   | symbols { Symbol(Lexing.lexeme lexbuf) }
   | boolLit { BoolLit (bool_of_string (Lexing.lexeme lexbuf)) }
   | intLit { IntLit (int_of_string (Lexing.lexeme lexbuf)) }
