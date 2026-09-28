@@ -17,7 +17,7 @@ let digit = ['0'-'9']
 let intLit = digit+ | '-'digit+
 let floatLit = ('-'digit+ | digit+)'.'digit+
 let letter = ['a'-'z' 'A'-'Z']
-let escapeChars = '\\' | '\'' | '\"' | '\n' | 'r' | '\t' | '\b'
+let escapeChars = '\\' ('\\' | '\'' | '"' | 'n' | 'r' | 't' | 'b')
 let charLit = '\'' (letter | escapeChars) '\''
 let comment = '#' [^ '\r' '\n']* (line_terminator | eof)
 
