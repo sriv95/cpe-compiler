@@ -29,6 +29,17 @@ rule read = parse
   | boolLit { BoolLit (bool_of_string (Lexing.lexeme lexbuf)) }
   | intLit { IntLit (int_of_string (Lexing.lexeme lexbuf)) }
   | floatLit { FloatLit (float_of_string (Lexing.lexeme lexbuf))}
-  | charLit { CharLit (Lexing.lexeme_char lexbuf 1) }
+  | charLit {
+      let s = Lexing.lexeme lexbuf in
+      let c = if String.length s = 3 then s.[1]
+        else match s.[2] with
+          | 'n' -> '\n'
+          | 't' -> '\t'
+          | 'r' -> '\r'
+          | 'b' -> '\b'
+          | c -> c
+      in
+      CharLit c
+    }
   | eof { EOF }
   | _ { error (Lexing.lexeme lexbuf) lexbuf }
