@@ -18,10 +18,12 @@ let intLit = digit+ | '-'digit+
 let floatLit = ('-'digit+ | digit+)'.'digit+
 let letter = ['a'-'z' 'A'-'Z']
 let charLit = '\'' letter '\''
+let comment = '#' [^ '\r' '\n']* (line_terminator | eof)
 
 (** lexing rules **)
 rule read = parse
   | whitespace { read lexbuf }
+  | comment { read lexbuf }
   | symbols { Symbol(Lexing.lexeme lexbuf) }
   | boolLit { BoolLit (bool_of_string (Lexing.lexeme lexbuf)) }
   | intLit { IntLit (int_of_string (Lexing.lexeme lexbuf)) }
