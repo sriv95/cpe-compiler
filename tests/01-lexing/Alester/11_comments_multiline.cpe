@@ -1,0 +1,4 @@
+# Test Case 11: Multi-Line Comments
+(* This is a
+   multi-line comment *)
+def x = (* inline multiline comment *) 10

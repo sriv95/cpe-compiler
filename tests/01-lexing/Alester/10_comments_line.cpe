@@ -1,0 +1,4 @@
+# Test Case 10: Single-Line Comments
+def main = # starting comment here
+  42 # another comment at the end of line
+# full line comment
