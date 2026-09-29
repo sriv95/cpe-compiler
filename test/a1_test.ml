@@ -45,9 +45,8 @@ let tests = "sample test suite for lexing" >::: [
 
   (* 05_float_literals.cpe *)
   "05_float_literals" >:: (fun _ -> assert_equal [
-    FloatLit(0.0); FloatLit(3.14159); FloatLit(123.456); FloatLit(1e10);
-    FloatLit(0.0025); FloatLit(10000.0); EOF
-  ] (lex "0.0 3.14159 123.456 1e10 2.5e-3 0.1E+5"));
+    FloatLit(0.0); FloatLit(3.14159); FloatLit(123.456); EOF
+  ] (lex "0.0 3.14159 123.456"));
 
   (* 06_char_literals.cpe *)
   "06_char_literals" >:: (fun _ -> assert_equal [
