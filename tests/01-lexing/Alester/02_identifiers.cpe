@@ -1,3 +1,3 @@
 # Test Case 02: Variable Names, Type/Constructor Names, and Wildcard
-x x1 x2 map isEven foldl accum1 _var _
-Integer Cons1 String Bool Char Double Tree Leaf Node ConsIntList
+x x1 x1a x1Ab map isEven foldl accum1 _var _
+Integer Cons1 Cons1a Cons1Ab String Bool Char Double Tree Leaf Node ConsIntList

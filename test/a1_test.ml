@@ -21,15 +21,16 @@ let tests = "sample test suite for lexing" >::: [
 
   (* 02_identifiers.cpe *)
   "02_identifiers" >:: (fun _ -> assert_equal [
-    VariableName("x"); VariableName("x1"); VariableName("x2"); VariableName("map");
-    VariableName("isEven"); VariableName("foldl"); VariableName("accum1");
-    VariableName("_var"); VariableName("_");
+    VariableName("x"); VariableName("x1"); VariableName("x1a"); VariableName("x1Ab");
+    VariableName("map"); VariableName("isEven"); VariableName("foldl");
+    VariableName("accum1"); VariableName("_var"); VariableName("_");
     TypeOrConstructorName("Integer"); TypeOrConstructorName("Cons1");
-    TypeOrConstructorName("String"); TypeOrConstructorName("Bool");
-    TypeOrConstructorName("Char"); TypeOrConstructorName("Double");
-    TypeOrConstructorName("Tree"); TypeOrConstructorName("Leaf");
-    TypeOrConstructorName("Node"); TypeOrConstructorName("ConsIntList"); EOF
-  ] (lex "x x1 x2 map isEven foldl accum1 _var _\nInteger Cons1 String Bool Char Double Tree Leaf Node ConsIntList"));
+    TypeOrConstructorName("Cons1a"); TypeOrConstructorName("String");
+    TypeOrConstructorName("Bool"); TypeOrConstructorName("Char");
+    TypeOrConstructorName("Double"); TypeOrConstructorName("Tree");
+    TypeOrConstructorName("Leaf"); TypeOrConstructorName("Node");
+    TypeOrConstructorName("ConsIntList"); EOF
+  ] (lex "x x1 x1a x1Ab map isEven foldl accum1 _var _\nInteger Cons1 Cons1a String Bool Char Double Tree Leaf Node ConsIntList"));
 
   (* 03_bool_literals.cpe *)
   "03_bool_literals" >:: (fun _ -> assert_equal [
