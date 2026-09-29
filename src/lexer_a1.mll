@@ -29,7 +29,7 @@ rule read = parse
   | comment { read lexbuf }
   | keyword { Keyword(Lexing.lexeme lexbuf) }
   | symbols { Symbol(Lexing.lexeme lexbuf) }
-  | boolLit { BoolLit (bool_of_string (Lexing.lexeme lexbuf)) }
+  | boolLit { BoolLit (Lexing.lexeme lexbuf = "True") }
   | intLit { IntLit (int_of_string (Lexing.lexeme lexbuf)) }
   | floatLit { FloatLit (float_of_string (Lexing.lexeme lexbuf))}
   | charLit {
