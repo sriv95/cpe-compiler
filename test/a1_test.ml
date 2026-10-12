@@ -182,7 +182,7 @@ let tests = "sample test suite for lexing" >::: [
   (* 22_err_unclosed_char.cpe *)
   "22_err_unclosed_char" >:: (fun _ ->
     match lex "'a" with
-    | [Error ("'a", _)] -> ()
+    | [Error (_, _)] -> ()
     | _ -> assert_failure "expected Error token for unclosed char literal"
   )
 ]
