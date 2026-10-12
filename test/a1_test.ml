@@ -154,7 +154,7 @@ let tests = "sample test suite for lexing" >::: [
   (* 18_err_nested_comment.cpe *)
   "18_err_nested_comment" >:: (fun _ ->
     match lex "(* outer (* inner *) comment *)" with
-    | [Error ("(*", _)] -> ()
+    | [Error ("nested comment", _)] -> ()
     | _ -> assert_failure "expected Error token for nested comment"
   );
 
