@@ -9,6 +9,7 @@ let string_of_type(t: ty) : string =
   | Int -> "int"
   | Bool -> "bool"
 
+  
 (* TODO: define your own type checking *)
 let rec typecheck_prog(p : unit prog) : ty prog option =
   match p with
