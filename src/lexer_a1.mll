@@ -20,7 +20,7 @@ let intLit = digit+
 let floatLit = digit+'.'digit+
 let letter = ['a'-'z' 'A'-'Z']
 let escapeChars = '\\' ('\\' | '\'' | '"' | 'n' | 'r' | 't' | 'b')
-let charLit = '\'' (letter | escapeChars) '\''
+let charLit = '\'' ([^ '\'' '\\' '\r' '\n'] | escapeChars) '\''
 let comment = '#' [^ '\r' '\n']* (line_terminator | eof)
 
 (** lexing rules **)
