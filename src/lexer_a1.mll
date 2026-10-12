@@ -22,6 +22,7 @@ let varName = ['a'-'z'] idChar*
 let typeName = ['A'-'Z'] idChar*
 let escapeChars = '\\' ('\\' | '\'' | '"' | 'n' | 'r' | 't' | 'b')
 let charLit = '\'' ([^ '\'' '\\' '\r' '\n'] | escapeChars) '\''
+let unknownEscapeChar = '\'' '\\' _ '\''
 let stringLit = '"' ([^ '"' '\\' '\r' '\n'] | escapeChars)* '"'
 let comment = '#' [^ '\r' '\n']* (line_terminator | eof)
 
@@ -49,6 +50,7 @@ rule read = parse
       in
       CharLit c
     }
+  | unknownEscapeChar { error (Lexing.lexeme lexbuf) lexbuf }
   | stringLit {
       let s = Lexing.lexeme lexbuf in
       let n = String.length s - 1 in
