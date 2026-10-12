@@ -17,6 +17,9 @@ let digit = ['0'-'9']
 let intLit = digit+
 let floatLit = digit+'.'digit+
 let letter = ['a'-'z' 'A'-'Z']
+let idChar = letter | digit | '_'
+let varName = ['a'-'z'] idChar*
+let typeName = ['A'-'Z'] idChar*
 let escapeChars = '\\' ('\\' | '\'' | '"' | 'n' | 'r' | 't' | 'b')
 let charLit = '\'' ([^ '\'' '\\' '\r' '\n'] | escapeChars) '\''
 let stringLit = '"' ([^ '"' '\\' '\r' '\n'] | escapeChars)* '"'
@@ -30,6 +33,8 @@ rule read = parse
   | keyword { Keyword(Lexing.lexeme lexbuf) }
   | symbols { Symbol(Lexing.lexeme lexbuf) }
   | boolLit { BoolLit (Lexing.lexeme lexbuf = "True") }
+  | varName { VariableName (Lexing.lexeme lexbuf) }
+  | typeName { TypeOrConstructorName (Lexing.lexeme lexbuf) }
   | intLit { IntLit (int_of_string (Lexing.lexeme lexbuf)) }
   | floatLit { FloatLit (float_of_string (Lexing.lexeme lexbuf))}
   | charLit {
