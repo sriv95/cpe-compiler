@@ -4,8 +4,6 @@ open Token
 
 let error msg lexbuf =
   Error(msg, Lexing.lexeme_start_p lexbuf)
-
-let string_buf = Buffer.create 256
 }
 
 (** regex patterns **)
@@ -21,6 +19,7 @@ let floatLit = digit+'.'digit+
 let letter = ['a'-'z' 'A'-'Z']
 let escapeChars = '\\' ('\\' | '\'' | '"' | 'n' | 'r' | 't' | 'b')
 let charLit = '\'' ([^ '\'' '\\' '\r' '\n'] | escapeChars) '\''
+let stringLit = '"' ([^ '"' '\\' '\r' '\n'] | escapeChars)* '"'
 let comment = '#' [^ '\r' '\n']* (line_terminator | eof)
 
 (** lexing rules **)
@@ -44,6 +43,26 @@ rule read = parse
           | c -> c
       in
       CharLit c
+    }
+  | stringLit {
+      let s = Lexing.lexeme lexbuf in
+      let n = String.length s - 1 in
+      let b = Buffer.create n in
+      let rec go i =
+        if i < n then
+          if s.[i] = '\\' then begin
+            Buffer.add_char b
+              (match s.[i + 1] with
+               | 'n' -> '\n'
+               | 't' -> '\t'
+               | 'r' -> '\r'
+               | 'b' -> '\b'
+               | c -> c);
+            go (i + 2)
+          end else (Buffer.add_char b s.[i]; go (i + 1))
+      in
+      go 1;
+      StringLit (Buffer.contents b)
     }
   | eof { EOF }
   | _ { error (Lexing.lexeme lexbuf) lexbuf }
