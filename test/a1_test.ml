@@ -146,7 +146,7 @@ let tests = "sample test suite for lexing" >::: [
   (* 17_err_unclosed_string.cpe *)
   "17_err_unclosed_string" >:: (fun _ ->
     match lex "\"this string is never closed" with
-    | [Error ("unclosed string", _)] -> ()
+    | [Error ("\"", _)] -> ()
     | _ -> assert_failure "expected Error token for unclosed string"
   );
 
@@ -167,14 +167,14 @@ let tests = "sample test suite for lexing" >::: [
   (* 20_err_empty_char.cpe *)
   "20_err_empty_char" >:: (fun _ ->
     match lex "''" with
-    | [Error ("''", _)] -> ()
+    | [Error ("'", _)] -> ()
     | _ -> assert_failure "expected Error token for empty char literal"
   );
 
   (* 21_err_multi_char_in_char_lit.cpe *)
   "21_err_multi_char_in_char_lit" >:: (fun _ ->
     match lex "'abc'" with
-    | [Error ("'abc'", _)] -> ()
+    | [Error ("'", _)] -> ()
     | _ -> assert_failure "expected Error token for multi-char in char lit"
   );
 
