@@ -13,7 +13,7 @@ let line_terminator = '\r' | '\n' | "\r\n"
 let whitespace = (line_terminator | [' ' '\t'])+
 
 let keyword = "def" | "import" | "as" | "match" | "with" | "if" | "then" | "else" | "let" | "in" | "and" | "data" | "type"
-let symbols = "+" | "*" | "/" | "//" | "%" | "<" | "<=" | ">=" | ">" | "==" | "!=" | "=" | "&&" | "||" | "|" | "->" | "::" | "(" | ")" | ":"
+let symbols = "+" | "*" | "/" | "//" | "%" | "<" | "<=" | ">=" | ">" | "==" | "!=" | "=" | "&&" | "||" | "|" | "->" | "::" | "(" | ")" | ":" | "-" | "++" | "." | "$" | "[" | "]" | "," | "_" | "\\" | "=>" | "!"
 let boolLit = "True" | "False"
 let digit = ['0'-'9']
 let intLit = digit+
