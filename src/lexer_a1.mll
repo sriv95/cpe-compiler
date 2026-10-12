@@ -27,6 +27,7 @@ let comment = '#' [^ '\r' '\n']* (line_terminator | eof)
 rule read = parse
   | whitespace { read lexbuf }
   | comment { read lexbuf }
+  | "(*" { comment_ml (Lexing.lexeme_start_p lexbuf) lexbuf }
   | keyword { Keyword(Lexing.lexeme lexbuf) }
   | symbols { Symbol(Lexing.lexeme lexbuf) }
   | boolLit { BoolLit (Lexing.lexeme lexbuf = "True") }
@@ -46,3 +47,10 @@ rule read = parse
     }
   | eof { EOF }
   | _ { error (Lexing.lexeme lexbuf) lexbuf }
+
+and comment_ml start = parse
+  | "*)" { read lexbuf }
+  | "(*" { Error("nested comment", Lexing.lexeme_start_p lexbuf) }
+  | line_terminator { Lexing.new_line lexbuf; comment_ml start lexbuf }
+  | eof { Error("unterminated comment", start) }
+  | _ { comment_ml start lexbuf }
