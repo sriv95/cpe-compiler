@@ -52,12 +52,12 @@ open Ast
 %right DOT
 
 (* starting nonterminal *)
-%start <unit prog> start
+%start <Ast.prog> start
 %%
 
 (** rules section **)
 start:
-  | prog = prog; EOF { prog }
+  | p = prog; EOF { p }
 
 prog:
   | imps = list(import); defs = list(defn)
