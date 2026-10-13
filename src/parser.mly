@@ -21,58 +21,80 @@ open Ast
 %left TIMES
 
 (* starting nonterminal *)
-%start <unit prog> start
+%start <Ast.prog> start
 %%
 
 (** rules section **)
 start:
-  | prog = prog; EOF { prog }
+  | p = prog; EOF { p }
 
 prog:
-  | e = expr { e }
+  | e = expr {
+      (* ห่อ expr ให้อยู่ในโครงสร้าง Prog ของ ast.ml ใหม่ *)
+      Prog {
+        pos = $loc;
+        imports = [];
+        defns = [
+          FuncDef {
+            pos = $loc;
+            id = "main";
+            params = [UnitParam { pos = $loc }];
+            ret_ty = TypeAtom { pos = $loc; id = "Integer" };
+            body = e;
+          }
+        ];
+      }
+    }
 
 expr:
-  | e1 = expr; "+"; e2 = expr { BinExpr {
-      prop = ();
-      pos = $loc;
-      op = Add;
-      left = e1;
-      right = e2;
-    }}
-  | e1 = expr; "*"; e2 = expr { BinExpr {
-      prop = ();
-      pos = $loc;
-      op = Mult;
-      left = e1;
-      right = e2;
-    }}
-  | e1 = expr; "||"; e2 = expr { BinExpr {
-      prop = ();
-      pos = $loc;
-      op = LOr;
-      left = e1;
-      right = e2;
-    }}
-  | e1 = expr; "&&"; e2 = expr { BinExpr {
-      prop = ();
-      pos = $loc;
-      op = LAnd;
-      left = e1;
-      right = e2;
-    }}
-  | "true" { BoolLit {
-      prop = ();
-      pos = $loc;
-      value = true;
-    }}
-  | "false" { BoolLit {
-      prop = ();
-      pos = $loc;
-      value = false;
-    }}
-  | n = INT_LIT { IntLit {
-      prop = ();
-      pos = $loc;
-      value = n;
-    }}
+  | e1 = expr; "+"; e2 = expr {
+      BinOpExpr {
+        pos = $loc;
+        op = "+";
+        left = e1;
+        right = e2;
+      }
+    }
+  | e1 = expr; "*"; e2 = expr {
+      BinOpExpr {
+        pos = $loc;
+        op = "*";
+        left = e1;
+        right = e2;
+      }
+    }
+  | e1 = expr; "||"; e2 = expr {
+      BinOpExpr {
+        pos = $loc;
+        op = "||";
+        left = e1;
+        right = e2;
+      }
+    }
+  | e1 = expr; "&&"; e2 = expr {
+      BinOpExpr {
+        pos = $loc;
+        op = "&&";
+        left = e1;
+        right = e2;
+      }
+    }
+  | "true" {
+      AtomExpr {
+        pos = $loc;
+        literal = "True";
+      }
+    }
+  | "false" {
+      AtomExpr {
+        pos = $loc;
+        literal = "False";
+      }
+    }
+  | n = INT_LIT {
+      AtomExpr {
+        pos = $loc;
+        literal = string_of_int n;
+      }
+    }
   | "("; e = expr; ")" { e }

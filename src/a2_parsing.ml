@@ -7,7 +7,7 @@ let print_lexbuf_position outx (lexbuf : Lexing.lexbuf) =
   let pos = lexbuf.lex_curr_p in
   Printf.fprintf outx "%s" (string_of_position pos)
 
-let parse_with_error lexbuf : unit prog option =
+let parse_with_error lexbuf : prog option =
   try Some (Parser.start Lexer.read lexbuf) with
   | SyntaxError (msg, pos) ->
     Printf.fprintf stderr "%s: %s\n" (string_of_position pos) msg;
@@ -17,7 +17,7 @@ let parse_with_error lexbuf : unit prog option =
         print_lexbuf_position lexbuf (Lexing.lexeme lexbuf);
     None
 
-let parse (s : string) : unit prog option =
+let parse (s : string) : prog option =
   let lexbuf = Lexing.from_string s in
   parse_with_error lexbuf
 
@@ -30,7 +30,7 @@ let pretty_parse (s : string) : string =
   | None -> "syntax error"
   | Some prog -> pretty_print_s_expr (string_of_prog prog)
 
-let parse_file (filename : string) : unit prog option =
+let parse_file (filename : string) : prog option =
   let ic = open_in filename in
   try
     let lexbuf = Lexing.from_channel ic in
