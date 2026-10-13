@@ -6,7 +6,7 @@ open Ast
 (** declarations section **)
 
 (* token declarations *)
-(* literal and names*)
+/* Literals and Names */
 %token <int>    INT_LIT
 %token <float>  FLOAT_LIT
 %token <char>   CHAR_LIT
@@ -15,18 +15,27 @@ open Ast
 %token <string> NAME       (* uppercase-initial: types and constructors *)
 %token TRUE "True" FALSE "False"
 
-(* punctuation *)
+/* Keywords */
+%token IMPORT "import" AS "as"
+%token DATA "data" TYPE "type" DEF "def"
+%token IF "if" THEN "then" ELSE "else"
+%token MATCH "match" WITH "with"
+%token LET "let" IN "in" AND "and"
+
+/* Punctuation */
 %token LPAREN "(" RPAREN ")" LBRACKET "[" RBRACKET "]"
 %token COMMA "," COLON ":" EQ "=" BAR "|" UNDERSCORE "_"
 %token ARROW "->" DARROW "=>" LAMBDA "\\" BANG "!"
 
-(* operators *)
+/* Operators */
 %token PLUS "+" MINUS "-" TIMES "*" DIV "/" IDIV "//" MOD "%"
 %token EQEQ "==" NEQ "!=" LT "<" LE "<=" GE ">=" GT ">"
 %token ANDAND "&&" OROR "||"
 %token CONS "::" APPEND "++" DOT "." DOLLAR "$"
 
+/* Special Tokens */
 %token EOF
+%token UMINUS (* Pseudo-token for unary minus precedence *)
 
 (* precedence and associativity declarations *)
 %nonassoc MATCH_END                      (* closes a match; must be below BAR *)
