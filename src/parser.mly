@@ -6,19 +6,50 @@ open Ast
 (** declarations section **)
 
 (* token declarations *)
-%token <int> INT_LIT
-%token TRUE "true"
-%token FALSE "false"
-%token PLUS "+" TIMES "*"
-%token OROR "||" ANDAND "&&"
-%token LPAREN "(" RPAREN ")"
+/* Literals and Names */
+%token <int>    INT_LIT
+%token <float>  FLOAT_LIT
+%token <char>   CHAR_LIT
+%token <string> STRING_LIT
+%token <string> VAR        (* lowercase-initial identifier *)
+%token <string> NAME       (* uppercase-initial: types and constructors *)
+%token TRUE "True" FALSE "False"
+
+/* Keywords */
+%token IMPORT "import" AS "as"
+%token DATA "data" TYPE "type" DEF "def"
+%token IF "if" THEN "then" ELSE "else"
+%token MATCH "match" WITH "with"
+%token LET "let" IN "in" AND "and"
+
+/* Punctuation */
+%token LPAREN "(" RPAREN ")" LBRACKET "[" RBRACKET "]"
+%token COMMA "," COLON ":" EQ "=" BAR "|" UNDERSCORE "_"
+%token ARROW "->" DARROW "=>" LAMBDA "\\" BANG "!"
+
+/* Operators */
+%token PLUS "+" MINUS "-" TIMES "*" DIV "/" IDIV "//" MOD "%"
+%token EQEQ "==" NEQ "!=" LT "<" LE "<=" GE ">=" GT ">"
+%token ANDAND "&&" OROR "||"
+%token CONS "::" APPEND "++" DOT "." DOLLAR "$"
+
+/* Special Tokens */
 %token EOF
+%token UMINUS (* Pseudo-token for unary minus precedence *)
 
 (* precedence and associativity declarations *)
-%left OROR
-%left ANDAND
-%left PLUS
-%left TIMES
+%nonassoc MATCH_END                      (* closes a match; must be below BAR *)
+%nonassoc BAR
+%nonassoc IN DARROW ELSE ARROW           (* let / lambda / if / match-case bodies *)
+%right DOLLAR
+%right OROR
+%right ANDAND
+%nonassoc EQEQ NEQ LT LE GE GT
+%right CONS APPEND
+%left PLUS MINUS
+%left TIMES DIV IDIV MOD
+%nonassoc UMINUS                         (* pseudo-token for prefix minus *)
+%right DOT
 
 (* starting nonterminal *)
 %start <Ast.prog> start
@@ -29,72 +60,95 @@ start:
   | p = prog; EOF { p }
 
 prog:
-  | e = expr {
-      (* ห่อ expr ให้อยู่ในโครงสร้าง Prog ของ ast.ml ใหม่ *)
-      Prog {
-        pos = $loc;
-        imports = [];
-        defns = [
-          FuncDef {
-            pos = $loc;
-            id = "main";
-            params = [UnitParam { pos = $loc }];
-            ret_ty = TypeAtom { pos = $loc; id = "Integer" };
-            body = e;
-          }
-        ];
-      }
-    }
+  | imps
+
+import:
+  |
+
+defn:
+  |
+
+data:
+  |
+
+type:
+  |
+
+def:
+  |
+
+typedecl:
+  |
+
+constructor:
+  |
+
+typeexpr:
+  |
+
+param:
+  |
 
 expr:
-  | e1 = expr; "+"; e2 = expr {
-      BinOpExpr {
-        pos = $loc;
-        op = "+";
-        left = e1;
-        right = e2;
-      }
-    }
-  | e1 = expr; "*"; e2 = expr {
-      BinOpExpr {
-        pos = $loc;
-        op = "*";
-        left = e1;
-        right = e2;
-      }
-    }
-  | e1 = expr; "||"; e2 = expr {
-      BinOpExpr {
-        pos = $loc;
-        op = "||";
-        left = e1;
-        right = e2;
-      }
-    }
-  | e1 = expr; "&&"; e2 = expr {
-      BinOpExpr {
-        pos = $loc;
-        op = "&&";
-        left = e1;
-        right = e2;
-      }
-    }
-  | "true" {
-      AtomExpr {
-        pos = $loc;
-        literal = "True";
-      }
-    }
-  | "false" {
-      AtomExpr {
-        pos = $loc;
-        literal = "False";
-      }
-    }
-  | n = INT_LIT {
-      AtomExpr {
-        pos = $loc;
-        literal = string_of_int n;
-      }
-    }
+  | e1 = expr; "+"; e2 = expr { BinExpr {
+      prop = ();
+      pos = $loc;
+      op = Add;
+      left = e1;
+      right = e2;
+    }}
+  | e1 = expr; "*"; e2 = expr { BinExpr {
+      prop = ();
+      pos = $loc;
+      op = Mult;
+      left = e1;
+      right = e2;
+    }}
+  | e1 = expr; "||"; e2 = expr { BinExpr {
+      prop = ();
+      pos = $loc;
+      op = LOr;
+      left = e1;
+      right = e2;
+    }}
+  | e1 = expr; "&&"; e2 = expr { BinExpr {
+      prop = ();
+      pos = $loc;
+      op = LAnd;
+      left = e1;
+      right = e2;
+    }}
+  | "true" { BoolLit {
+      prop = ();
+      pos = $loc;
+      value = true;
+    }}
+  | "false" { BoolLit {
+      prop = ();
+      pos = $loc;
+      value = false;
+    }}
+  | n = INT_LIT { IntLit {
+      prop = ();
+      pos = $loc;
+      value = n;
+    }}
   | "("; e = expr; ")" { e }
+
+ifexpr:
+  |
+
+letexpr:
+  |
+
+matchexpr:
+  |
+
+letbinding:
+  |
+
+case:
+  |
+
+ptrn:
+  |
