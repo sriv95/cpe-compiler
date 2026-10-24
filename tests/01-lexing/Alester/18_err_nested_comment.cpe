@@ -1,0 +1,2 @@
+# Illegal nested comment
+(* outer (* inner *) comment *)

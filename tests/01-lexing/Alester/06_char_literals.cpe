@@ -1,0 +1,2 @@
+# Test Case 06: Valid Character Literals and Escapes
+'a' 'Z' '0' '\\' '\'' '\"' '\n' '\r' '\t' '\b'

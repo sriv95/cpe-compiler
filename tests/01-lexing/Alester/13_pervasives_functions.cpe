@@ -1,0 +1,9 @@
+def map (f : a -> b) (xs : [a]) : [b] =
+  match xs with
+  | [] -> []
+  | hd::tl -> f hd :: map f tl
+
+def filter (p : a -> Bool) (xs : [a]) : [a] =
+  match xs with
+  | [] -> []
+  | hd::tl -> if p hd then hd :: filter p tl else filter p tl
