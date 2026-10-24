@@ -13,6 +13,17 @@ let string_buf = Buffer.create 256
 let line_terminator = '\r' | '\n' | "\r\n"
 let whitespace = (line_terminator | [' ' '\t'])+
 let digit = ['0'-'9']
+let intLit = digit+
+let floatLit = digit+'.'digit+
+let letter = ['a'-'z' 'A'-'Z']
+let idChar = letter | digit | '_'
+let varName = ['a'-'z'] idChar*
+let typeName = ['A'-'Z'] idChar*
+let escapeChars = '\\' ('\\' | '\'' | '"' | 'n' | 'r' | 't' | 'b')
+let charLit = '\'' ([^ '\'' '\\' '\r' '\n'] | escapeChars) '\''
+let unknownEscapeChar = '\'' '\\' _ '\''
+let stringLit = '"' ([^ '"' '\\' '\r' '\n'] | escapeChars)* '"'
+let comment = '#' [^ '\r' '\n']* (line_terminator | eof)
 
 (** lexing rules **)
 rule read = parse
@@ -23,7 +34,7 @@ rule read = parse
   | "&&" { ANDAND }
   | "(" { LPAREN }
   | ")" { RPAREN }
-  | digit+ as x { INT_LIT (int_of_string x) }
+  | intLit as x { INT_LIT (int_of_string x) }
   | "true" { TRUE }
   | "false" { FALSE }
   | eof { EOF }
