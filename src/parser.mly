@@ -161,17 +161,84 @@ app_expr:
   | f = app_expr; x = atom;
     { AppExpr { prop = (); pos = $loc; fn = f; arg = x}}
 
-letexpr:
-  |
-
-matchexpr:
-  |
+atom:
+  | n = INT_LIT
+    { IntLit { prop = (); pos = $loc; value = n}}
+  | f = FLOAT_LIT
+    { FloatLit { prop = (); pos = $loc; value = n}}
+  | c = CHAR_LIT
+    { CharLit { prop = (); pos = $loc; value = c}}
+  | s = STRING_LIT
+    { StringLit { prop = (); pos = $loc; value = s}}
+  | "True"
+    { BoolLit { prop = (); pos = $loc; value = true}}
+  | "False"
+    { BoolLit { prop = (); pos = $loc; value = false}}
+  | x = VAR
+    { VarExpr { prop = (); pos = $loc; id = x}}
+  | c = NAME
+    { ConExpr { prop = (); pos = $loc; id = c}}
+  | n = VAR; "!"; x = VAR
+    { NamespaceExpr { prop = (); pos = $loc; ns = n; id = x}}
+  | "("; ")"
+    { UnitLit { prop = (); pos = $loc}}
+  | "["; "]"
+    { NilLit { prop = (); pos = $loc}}
+  | "("; e = expr; ")"
+    { e }
+  | "("; a = expr; ","; b = expr; ")"
+    { TupleExpr { prop = (); pos = $loc; left = a; right = b}}
 
 letbinding:
-  |
+  | x = VAR; "="; e = expr
+    { VarBinding { prop = (); pos = $loc; id = x; value = e}}
+  | f = VAR; ps = nonempty_list(param); ":"; t= typeexpr; "="; e = expr
+    { FuncBinding { prop = (); pos = $loc; id = f; params = ps; ret_ty = t; body = e}}
+
+cases:
+  | c = case
+    { [c] }
+  | cs = cases; "|"; c = case
+    { cs @ [c]}
 
 case:
-  |
+  | p = pattern; "->"; e = expr
+    { Case { pos = $loc; ptrn = p; body = e}}
 
-ptrn:
-  |
+pattern:
+  | p = cpattern
+    { p }
+  | h = cpattern; "::"; t = pattern
+    { ListConsPtrn { prop = (); pos = $loc; head = h; tail = t}}
+  
+cpattern:
+  | p = apattern  
+    { p }
+  | c = NAME; args = nonempty_list(apattern)
+    { ConsPtrn { prop = (); pos = $loc; id = c; args = args}}
+
+apattern:
+  | "_"
+    { WildcardPtrn { prop = (); pos = $loc;}}
+  | x = VAR
+    { VarPtrn { prop = (); pos = $loc; id = x}}
+  | c = NAME
+    { ConsPtrn { prop = (); pos = $loc; id = c; args = []}}
+  | n = INT_LIT
+    { IntPtrn { prop = (); pos = $loc; value = n}}
+  | c = CHAR_LIT
+    { CharPtrn { prop = (); pos = $loc; value = c}}
+  | s = STRING_LIT
+    { StringPtrn { prop = (); pos = $loc; value = s}}
+  | "True"
+    { BoolPtrn { prop = (); pos = $loc; value = true}}
+  | "False"
+    { BoolPtrn { prop = (); pos = $loc; value = false}}
+  | "("; ")"
+    { UnitPtrn { prop = (); pos = $loc}}
+  | "["; "]"
+    { NilPtrn { prop = (); pos = $loc}}
+  | "("; p = pattern; ")" 
+    { p }
+  | "("; a = pattern; ","; b = pattern; ")"
+    { PairPtrn { prop = (); pos = $loc; left = a; right = b}}
