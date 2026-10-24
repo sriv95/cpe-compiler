@@ -1,4 +1,4 @@
-open Utils
+(* open Utils *)
 open Ast
 
 (* TODO: define your own types *)
@@ -10,8 +10,8 @@ let string_of_type(t: ty) : string =
   | Bool -> "bool"
 
 (* TODO: define your own type checking *)
-let rec typecheck_prog(p : unit prog) : ty prog option =
-  match p with
+let typecheck_prog(_ : unit prog) : ty prog option =
+  (* match p with
   | IntLit r -> Some (IntLit {r with prop = Int})
   | BoolLit r -> Some (BoolLit {r with prop = Bool})
   | BinExpr ({op = Add; _} as r)
@@ -51,7 +51,8 @@ let rec typecheck_prog(p : unit prog) : ty prog option =
           None
     )
     | _ -> None
-  )
+  ) *)
+   failwith "unimplemented"
 
 let typecheck(p : unit prog) : bool =
   match typecheck_prog p with

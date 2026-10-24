@@ -79,27 +79,30 @@ defn:
   (* function declaration *)
   | "def"; f = VAR; ps = list(param); ":"; t = typeexpr; e = expr
     { FuncDef { prop = (); pos = $loc; id = f; params = ps; ret_ty = t; body = e}} 
-    
-data:
-  |
-
-type:
-  |
-
-def:
-  |
 
 typedecl:
-  |
+  | n = NAME
+    { SimpleTypeDecl { pos = $loc; id = n}}
+  | n = NAME; vs = nonempty_list(VAR)
+    { PolyTypeDecl { pos = $loc; id = n; args = vs}}
 
 constructor:
-  |
-
-typeexpr:
-  |
+  | n = NAME 
+    { SimpleCons { pos = $loc; id = n}}
+  | n = NAME; args = nonempty_list(atype)
+    { ParamCons { pos = $loc; id = n; args = args}}
 
 param:
-  |
+  | "("; ")"
+    { UnitParam { pos = $loc}}
+  | "("; x = VAR; ":"; t = typeexpr; ")"
+    { TypedParam { pos = $loc; id = x; ty = t}}
+
+typeexpr:
+  | t = btype
+    { t }
+  | f = btype; a = atype
+    { FuncType { pos = $loc; arg = a; ret = r}}
 
 expr:
   | e1 = expr; "+"; e2 = expr { BinExpr {
