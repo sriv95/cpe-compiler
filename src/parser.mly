@@ -101,8 +101,32 @@ param:
 typeexpr:
   | t = btype
     { t }
-  | f = btype; a = atype
+  (* function type *)
+  | a = btype; "->"; r = typeexpr
     { FuncType { pos = $loc; arg = a; ret = r}}
+
+btype:
+  | t = atype
+    { t }
+  (* function application *)
+  | f = btype; a = atype
+    { AppType { pos = $loc; fn = f; arg = a}}
+
+
+atype:
+  | n = NAME 
+    { TypeAtom { pos = $loc; id = n}}
+  | v = VAR
+    { TypeAtom { pos = $loc; id = v}}
+  | "("; ")"
+    { TypeAtom { pos = $loc; id = "()"}}
+  | "["; t = typeexpr; "]"
+    { ListType { pos = $loc; elem_ty = t}}
+  (* function parameter *)
+  | "("; t = typeexpr; ")"
+    { t }
+  | "("; a = typeexpr; ","; b = typeexpr; ")"
+    { PairType { pos = $loc; left = a; right = b}}
 
 expr:
   | e1 = expr; "+"; e2 = expr { BinExpr {
