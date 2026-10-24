@@ -128,5 +128,5 @@ and comment_ml start = parse
   | "*)" { read lexbuf }
   | "(*" { error "nested comment" lexbuf }
   | line_terminator { Lexing.new_line lexbuf; comment_ml start lexbuf }
-  | eof { raise (SyntaxError("unterminated comment", start)) }
+  | eof { error "unterminated comment" lexbuf }
   | _ { comment_ml start lexbuf }
