@@ -179,7 +179,7 @@ atom:
   | c = NAME
     { ConExpr { prop = (); pos = $loc; id = c}}
   | n = VAR; "!"; x = VAR
-    { NamespaceExpr { prop = (); pos = $loc; ns = n; id = x}}
+    { NamespacedExpr { prop = (); pos = $loc; ns = n; id = x}}
   | "("; ")"
     { UnitLit { prop = (); pos = $loc}}
   | "["; "]"
