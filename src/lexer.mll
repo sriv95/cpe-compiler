@@ -126,7 +126,7 @@ rule read = parse
 
 and comment_ml start = parse
   | "*)" { read lexbuf }
-  | "(*" { Error("nested comment", Lexing.lexeme_start_p lexbuf) }
+  | "(*" { error "nested comment" lexbuf }
   | line_terminator { Lexing.new_line lexbuf; comment_ml start lexbuf }
-  | eof { Error("unterminated comment", start) }
+  | eof { raise (SyntaxError("unterminated comment", start)) }
   | _ { comment_ml start lexbuf }
