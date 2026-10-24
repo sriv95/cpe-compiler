@@ -5,42 +5,38 @@ open Ast
 
 (** declarations section **)
 
-(* token declarations *)
-/* Literals and Names */
+(* literals and names *)
 %token <int>    INT_LIT
 %token <float>  FLOAT_LIT
 %token <char>   CHAR_LIT
 %token <string> STRING_LIT
-%token <string> VAR        (* lowercase-initial identifier *)
-%token <string> NAME       (* uppercase-initial: types and constructors *)
+%token <string> VAR          (* lowercase-initial identifier *)
+%token <string> NAME         (* uppercase-initial: types and constructors *)
 %token TRUE "True" FALSE "False"
 
-/* Keywords */
-%token IMPORT "import" AS "as"
-%token DATA "data" TYPE "type" DEF "def"
-%token IF "if" THEN "then" ELSE "else"
+(* keywords *)
+%token DEF "def" DATA "data" TYPE "type" IMPORT "import" AS "as"
+%token LET "let" AND "and" IN "in"
 %token MATCH "match" WITH "with"
-%token LET "let" IN "in" AND "and"
+%token IF "if" THEN "then" ELSE "else"
 
-/* Punctuation */
+(* punctuation *)
 %token LPAREN "(" RPAREN ")" LBRACKET "[" RBRACKET "]"
 %token COMMA "," COLON ":" EQ "=" BAR "|" UNDERSCORE "_"
 %token ARROW "->" DARROW "=>" LAMBDA "\\" BANG "!"
 
-/* Operators */
+(* operators *)
 %token PLUS "+" MINUS "-" TIMES "*" DIV "/" IDIV "//" MOD "%"
 %token EQEQ "==" NEQ "!=" LT "<" LE "<=" GE ">=" GT ">"
 %token ANDAND "&&" OROR "||"
 %token CONS "::" APPEND "++" DOT "." DOLLAR "$"
 
-/* Special Tokens */
 %token EOF
-%token UMINUS (* Pseudo-token for unary minus precedence *)
 
-(* precedence and associativity declarations *)
-%nonassoc MATCH_END                      (* closes a match; must be below BAR *)
+(* precedence and associativity: lowest binding first *)
+%nonassoc MATCH_END                  (* closes a match; must be below BAR *)
 %nonassoc BAR
-%nonassoc IN DARROW ELSE ARROW           (* let / lambda / if / match-case bodies *)
+%nonassoc IN DARROW ELSE ARROW       (* let / lambda / if / match-case bodies *)
 %right DOLLAR
 %right OROR
 %right ANDAND
@@ -48,27 +44,29 @@ open Ast
 %right CONS APPEND
 %left PLUS MINUS
 %left TIMES DIV IDIV MOD
-%nonassoc UMINUS                         (* pseudo-token for prefix minus *)
+%nonassoc UMINUS                     (* pseudo-token for prefix minus *)
 %right DOT
 
 (* starting nonterminal *)
-%start <Ast.prog> start
+%start <unit prog> start
 %%
 
 (** rules section **)
 start:
-  | p = prog; EOF { p }
+  | p = program; EOF { p }
 
 prog:
   | imps = list(import); defs = list(defn)
     { Prog { pos = $loc; imports = imps; defns = defs}}
 
+(* ---------- imports ---------- *)
 import:
   | "import"; f = VAR
     { Import { pos = $loc; id = f}}
   | "import"; f = VAR; "as"; n = VAR
     { ImportAs { pos = $loc; id = f; ns = n}}
 
+(* ---------- top-level definitions ---------- *)
 defn:
   (* user defined data type *)
   | "data"; d = typedecl; "="; cs = separated_nonempty_list(BAR, constructor)
