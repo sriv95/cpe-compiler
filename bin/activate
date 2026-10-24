@@ -1,1 +1,1 @@
-alias lex='bin/lex_a1.sh'
+alias lex_a1='bin/lex_a1.sh'
