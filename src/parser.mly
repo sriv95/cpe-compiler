@@ -60,14 +60,26 @@ start:
   | prog = prog; EOF { prog }
 
 prog:
-  | imps
+  | imps = list(import); defs = list(defn)
+    { Prog { pos = $loc; imports = imps; defns = defs}}
 
 import:
-  |
+  | "import"; f = VAR
+    { Import { pos = $loc; id = f}}
+  | "import"; f = VAR; "as"; n = VAR
+    { ImportAs { pos = $loc; id = f; ns = n}}
 
 defn:
-  |
-
+  (* user defined data type *)
+  | "data"; d = typedecl; "="; cs = separated_nonempty_list(BAR, constructor)
+    { DataDef { pos = $loc; decl = d; ctors = cs}}
+  (* type synonyms *)
+  | "type"; d = typedecl; "="; t = typeexpr
+    { TypeDef { pos = $loc; decl = d; body = t}}
+  (* function declaration *)
+  | "def"; f = VAR; ps = list(param); ":"; t = typeexpr; e = expr
+    { FuncDef { prop = (); pos = $loc; id = f; params = ps; ret_ty = t; body = e}} 
+    
 data:
   |
 
