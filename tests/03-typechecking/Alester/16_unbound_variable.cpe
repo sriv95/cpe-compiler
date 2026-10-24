@@ -1,0 +1,4 @@
+# 16_unbound_variable.cpe
+# EXPECT: fail  (y ไม่ได้ประกาศ)
+def f (x : Integer) : Integer = x + y
+def main (arg : String) : String = arg

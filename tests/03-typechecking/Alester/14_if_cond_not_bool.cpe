@@ -1,0 +1,4 @@
+# 14_if_cond_not_bool.cpe
+# EXPECT: fail  (เงื่อนไข if เป็น Integer)
+def f (x : Integer) : Integer = if x then 1 else 2
+def main (arg : String) : String = arg

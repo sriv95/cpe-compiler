@@ -1,0 +1,4 @@
+# 13_logic_with_int.cpe
+# EXPECT: fail  (|| ต้องการ Bool)
+def f (x : Integer) : Bool = x || true
+def main (arg : String) : String = arg

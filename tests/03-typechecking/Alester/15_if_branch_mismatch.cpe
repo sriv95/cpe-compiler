@@ -1,0 +1,4 @@
+# 15_if_branch_mismatch.cpe
+# EXPECT: fail  (then เป็น Integer, else เป็น Bool)
+def f (x : Integer) : Integer = if x < 0 then 1 else false
+def main (arg : String) : String = arg

@@ -1,0 +1,6 @@
+# 19_pattern_type_mismatch.cpe
+# EXPECT: fail  (match [Integer] ด้วย tuple pattern)
+def f (xs : [Integer]) : Integer =
+  match xs with
+  | (a, b) -> a
+def main (arg : String) : String = arg

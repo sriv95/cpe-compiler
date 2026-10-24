@@ -1,0 +1,7 @@
+# 18_match_branch_mismatch.cpe
+# EXPECT: fail  (case แรกเป็น Integer, case สองเป็น Bool)
+def f (xs : [Integer]) : Integer =
+  match xs with
+  | [] -> 0
+  | hd::tl -> true
+def main (arg : String) : String = arg

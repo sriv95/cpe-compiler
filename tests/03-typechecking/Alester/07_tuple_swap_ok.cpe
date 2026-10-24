@@ -1,0 +1,6 @@
+# 07_tuple_swap_ok.cpe
+# EXPECT: pass
+def swap (p : (a, b)) : (b, a) =
+  match p with
+  | (x, y) -> (y, x)
+def main (arg : String) : String = arg

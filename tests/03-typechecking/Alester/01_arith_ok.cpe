@@ -1,0 +1,4 @@
+# 01_arith_ok.cpe
+# EXPECT: pass
+def f (x : Integer) : Integer = x * 2 + 1
+def main (arg : String) : String = arg

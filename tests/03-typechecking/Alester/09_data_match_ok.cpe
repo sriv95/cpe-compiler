@@ -1,0 +1,10 @@
+# 09_data_match_ok.cpe
+# EXPECT: pass
+data Tree a = Leaf | Node a (Tree a) (Tree a)
+
+def size (t : Tree a) : Integer =
+  match t with
+  | Leaf -> 0
+  | Node v l r -> 1 + size l + size r
+
+def main (arg : String) : String = arg

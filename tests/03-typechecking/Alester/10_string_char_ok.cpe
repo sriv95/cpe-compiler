@@ -1,0 +1,5 @@
+# 10_string_char_ok.cpe
+# EXPECT: pass
+def f (c : Char) : Bool = c == 'a' || c == '\n'
+def g (s : String) : String = s ++ " world"
+def main (arg : String) : String = arg

@@ -1,0 +1,4 @@
+# 17_cons_wrong_elem.cpe
+# EXPECT: fail  (ใส่ Char ลงใน [Integer])
+def f (x : Integer) : [Integer] = 'a' :: []
+def main (arg : String) : String = arg

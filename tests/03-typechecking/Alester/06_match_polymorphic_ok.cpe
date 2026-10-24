@@ -1,0 +1,7 @@
+# 06_match_polymorphic_ok.cpe
+# EXPECT: pass
+def length (xs : [a]) : Integer =
+  match xs with
+  | [] -> 0
+  | hd::tl -> 1 + length tl
+def main (arg : String) : String = arg
