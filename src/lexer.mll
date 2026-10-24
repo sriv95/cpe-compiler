@@ -45,6 +45,20 @@ rule read = parse
   | "and" { AND }
   | "True" { TRUE }
   | "False" { FALSE }
+  (* symbol *)
+  | "(" { LPAREN }
+  | ")" { RPAREN }
+  | "[" { LBRACKET }
+  | "]" { RBRACKET }
+  | "," { COMMA }
+  | ":" { COLON }
+  | "=" { EQ }
+  | "|" { BAR }
+  | "_" { UNDERSCORE }
+  | "->" { ARROW }
+  | "=>" { DARROW }
+  | "\\" { LAMBDA }
+  | "!" { BANG }
   | "+" { PLUS }
   | "*" { TIMES }
   | "||" { OROR }
