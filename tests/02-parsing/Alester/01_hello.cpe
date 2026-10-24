@@ -1,0 +1,2 @@
+# 01_hello.cpe
+def main (arg : String) : String = "Hello, world!"

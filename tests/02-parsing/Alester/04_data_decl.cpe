@@ -1,0 +1,5 @@
+# 04_data_decl.cpe
+data Tree a = Leaf | Node a (Tree a) (Tree a)
+data Color = Red | Green | Blue
+
+def main (arg : String) : String = arg

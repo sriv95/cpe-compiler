@@ -1,0 +1,7 @@
+# 08_let_function.cpe  (let binding ที่เป็นฟังก์ชันพร้อม param)
+def f (x : Integer) : [Integer] =
+  let go (n : Integer) : [Integer] =
+        if n == 0 then [] else n :: go (n - 1)
+  in go x
+
+def main (arg : String) : String = arg
