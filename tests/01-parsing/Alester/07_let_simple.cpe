@@ -1,0 +1,6 @@
+# 07_let_simple.cpe
+def f (x : Integer) : Integer =
+  let a = x + 1
+  in a * a
+
+def main (arg : String) : String = arg

@@ -1,0 +1,10 @@
+# 11_match_nested_last.cpe  (match ซ้อนใน case สุดท้าย ไม่ต้องใส่วงเล็บ)
+def f (xs : [Integer]) (ys : [Integer]) : Integer =
+  match xs with
+  | [] -> 0
+  | x::rest ->
+      match ys with
+      | [] -> x
+      | y::_ -> x + y
+
+def main (arg : String) : String = arg

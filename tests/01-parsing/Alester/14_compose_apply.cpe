@@ -1,0 +1,7 @@
+# 14_compose_apply.cpe  (. กับ $ และ function application)
+def f (xs : [Integer]) : String =
+  showIntList . sort . map inc $ xs
+
+def g (x : Integer) : Integer = h a b (c x) d
+
+def main (arg : String) : String = arg

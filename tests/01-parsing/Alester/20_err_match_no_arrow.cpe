@@ -1,0 +1,5 @@
+# 20_err_match_no_arrow.cpe
+def f (xs : [Integer]) : Integer =
+  match xs with
+  | [] 0
+  | hd::tl -> hd

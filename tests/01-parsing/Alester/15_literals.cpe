@@ -1,0 +1,8 @@
+# 15_literals.cpe  (char, string, escape, float, unit)
+def a (u : ()) : Char = 'x'
+def b (u : ()) : Char = '\n'
+def c (u : ()) : String = "tab\there \"quoted\""
+def d (u : ()) : Double = 3.14
+def e (u : ()) : () = ()
+
+def main (arg : String) : String = arg
