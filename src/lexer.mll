@@ -45,6 +45,7 @@ rule read = parse
   | "and" { AND }
   | "True" { TRUE }
   | "False" { FALSE }
+
   (* symbol *)
   | "(" { LPAREN }
   | ")" { RPAREN }
@@ -59,10 +60,28 @@ rule read = parse
   | "=>" { DARROW }
   | "\\" { LAMBDA }
   | "!" { BANG }
+
+  (* op *)
   | "+" { PLUS }
+  | "-" { MINUS }
   | "*" { TIMES }
-  | "||" { OROR }
+  | "/" { DIV }
+  | "//" { IDIV }
+  | "%" { MOD }
+  | "==" { EQEQ }
+  | "!=" { NEQ }
+  | "<" { LT }
+  | "<=" { LE }
+  | ">=" { GE }
+  | ">" { GT }
   | "&&" { ANDAND }
+  | "||" { OROR }
+  | "::" { CONS }
+  | "++" { APPEND }
+  | "." { DOT }
+  | "$" { DOLLAR }
+
+  (* name and lit *)
   | varName as x { VAR x }
   | typeName as x { NAME x }
   | intLit as x { INT_LIT (int_of_string x) }
