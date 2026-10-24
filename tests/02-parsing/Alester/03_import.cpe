@@ -1,0 +1,5 @@
+# 03_import.cpe
+import pervasives
+import utils
+
+def main (arg : String) : String = arg
