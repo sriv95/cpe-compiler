@@ -112,7 +112,6 @@ btype:
   | f = btype; a = atype
     { AppType { pos = $loc; fn = f; arg = a}}
 
-
 atype:
   | n = NAME 
     { TypeAtom { pos = $loc; id = n}}
@@ -128,54 +127,39 @@ atype:
   | "("; a = typeexpr; ","; b = typeexpr; ")"
     { PairType { pos = $loc; left = a; right = b}}
 
-expr:
-  | e1 = expr; "+"; e2 = expr { BinExpr {
-      prop = ();
-      pos = $loc;
-      op = Add;
-      left = e1;
-      right = e2;
-    }}
-  | e1 = expr; "*"; e2 = expr { BinExpr {
-      prop = ();
-      pos = $loc;
-      op = Mult;
-      left = e1;
-      right = e2;
-    }}
-  | e1 = expr; "||"; e2 = expr { BinExpr {
-      prop = ();
-      pos = $loc;
-      op = LOr;
-      left = e1;
-      right = e2;
-    }}
-  | e1 = expr; "&&"; e2 = expr { BinExpr {
-      prop = ();
-      pos = $loc;
-      op = LAnd;
-      left = e1;
-      right = e2;
-    }}
-  | "true" { BoolLit {
-      prop = ();
-      pos = $loc;
-      value = true;
-    }}
-  | "false" { BoolLit {
-      prop = ();
-      pos = $loc;
-      value = false;
-    }}
-  | n = INT_LIT { IntLit {
-      prop = ();
-      pos = $loc;
-      value = n;
-    }}
-  | "("; e = expr; ")" { e }
+%inline binop:
+  | "+"  { "+" }  | "-"  { "-" }  | "*"  { "*" }
+  | "/"  { "/" }  | "//" { "//" } | "%"  { "%" }
+  | "==" { "==" } | "!=" { "!=" }
+  | "<"  { "<" }  | "<=" { "<=" } | ">=" { ">=" } | ">" { ">" }
+  | "&&" { "&&" } | "||" { "||" }
+  | "::" { "::" } | "++" { "++" } | "." { "." } (* fucntion application *)
 
-ifexpr:
-  |
+expr:
+  | e = app_expr
+    { e }
+  | l = expr; op = binop; r = expr
+    { BinOpExpr { prop = (); pos = $loc; op = op; left = l; right = r}}
+  (* function application operator *)
+  | f = expr; "$"; x = expr; 
+    { AppExpr { prop = (); pos = $loc; fn = f; arg = x}}
+  (* force precedence of UMINUS so it gropus them first *)
+  | "-"; e = expr %prec UMINUS
+    { UnOpExpr { prop = (); pos = $loc; op = "-"; arg = e}}
+  | "if"; c = expr; "then"; t = expr; "else"; e = expr
+    { IfExpr { prop = (); pos = $loc; cond = c; then_branch = t; else_branch = e}}
+  | "let" bs = separated_nonempty_list(AND, letbinding); "in"; e = expr
+    { LetExpr { prop = (); pos = $loc; bindings = bs; body = e}}
+  | "\\"; ps = nonempty_list(param); ":"; t = typeexpr; "=>"; e = expr
+    { LambdaExpr { prop = (); pos = $loc; params = ps; ret_ty = t; body = e}}
+  | "match"; e = expr; "with"; BAR; cs = cases %prec MATCH_END
+    { MatchExpr { prop = (); pos = $loc; target = e; cases = cs}}
+
+app_expr: 
+  | a = atom;
+    { a }
+  | f = app_expr; x = atom;
+    { AppExpr { prop = (); pos = $loc; fn = f; arg = x}}
 
 letexpr:
   |
