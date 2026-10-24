@@ -1,3 +1,0 @@
-# 17_err_missing_equal.cpe
-def f (x : Integer) : Integer
-  x + 1

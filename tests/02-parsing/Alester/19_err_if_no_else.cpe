@@ -1,2 +1,0 @@
-# 19_err_if_no_else.cpe
-def f (x : Integer) : Integer = if x < 0 then 1

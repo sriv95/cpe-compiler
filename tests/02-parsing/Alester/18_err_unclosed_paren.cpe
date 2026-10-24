@@ -1,2 +1,0 @@
-# 18_err_unclosed_paren.cpe
-def f (x : Integer) : Integer = (x + 1 * 2

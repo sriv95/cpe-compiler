@@ -1,7 +1,0 @@
-# 06_if_nested.cpe
-def sign (x : Integer) : Integer =
-  if x < 0 then 0 - 1
-  else if x == 0 then 0
-  else 1
-
-def main (arg : String) : String = arg

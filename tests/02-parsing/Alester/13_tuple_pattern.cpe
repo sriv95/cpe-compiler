@@ -1,6 +1,0 @@
-# 13_tuple_pattern.cpe
-def swap (p : (a, b)) : (b, a) =
-  match p with
-  | (x, y) -> (y, x)
-
-def main (arg : String) : String = arg

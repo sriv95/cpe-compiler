@@ -1,5 +1,0 @@
-# 12_lambda.cpe
-def addAll (xs : [Integer]) : Integer =
-  foldl (\ (acc : Integer) (x : Integer) : Integer => acc + x) 0 xs
-
-def main (arg : String) : String = arg

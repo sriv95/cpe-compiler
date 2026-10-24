@@ -1,5 +1,0 @@
-# 05_type_alias.cpe
-type IntList = [Integer]
-type Pair a = (a, a)
-
-def main (arg : String) : String = arg

@@ -1,3 +1,0 @@
-# 02_arith_prec.cpe  (ทดสอบ precedence/associativity)
-def f (x : Integer) (y : Integer) : Integer = (2 + x) * y - 3 / x % 2
-def main (arg : String) : String = arg

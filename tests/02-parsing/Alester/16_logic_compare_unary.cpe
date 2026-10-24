@@ -1,5 +1,0 @@
-# 16_logic_compare_unary.cpe
-def f (a : Integer) (c : Char) : Bool =
-  a >= 0 && a <= 9 || c == 'x' && -a != 5
-
-def main (arg : String) : String = arg  # comment ท้ายบรรทัด
