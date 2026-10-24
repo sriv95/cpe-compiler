@@ -1,0 +1,5 @@
+# 20_apply_wrong_arg.cpe
+# EXPECT: fail  (ส่ง Bool ให้ฟังก์ชันที่รับ Integer)
+def inc (x : Integer) : Integer = x + 1
+def f (b : Bool) : Integer = inc b
+def main (arg : String) : String = arg

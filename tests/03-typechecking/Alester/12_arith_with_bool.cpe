@@ -1,0 +1,4 @@
+# 12_arith_with_bool.cpe
+# EXPECT: fail  (Integer + Bool)
+def f (x : Integer) : Integer = x + true
+def main (arg : String) : String = arg

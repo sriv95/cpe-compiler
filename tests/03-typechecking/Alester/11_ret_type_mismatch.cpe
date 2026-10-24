@@ -1,0 +1,4 @@
+# 11_ret_type_mismatch.cpe
+# EXPECT: fail  (body เป็น Integer แต่ประกาศ Bool)
+def f (x : Integer) : Bool = x + 1
+def main (arg : String) : String = arg

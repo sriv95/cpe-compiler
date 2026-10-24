@@ -1,0 +1,6 @@
+# 04_let_ok.cpe
+# EXPECT: pass
+def f (x : Integer) : Integer =
+  let a = x + 1
+  in a * a
+def main (arg : String) : String = arg
