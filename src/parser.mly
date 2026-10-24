@@ -77,7 +77,7 @@ defn:
   | "type"; d = typedecl; "="; t = typeexpr
     { TypeDef { pos = $loc; decl = d; body = t}}
   (* function declaration *)
-  | "def"; f = VAR; ps = list(param); ":"; t = typeexpr; e = expr
+  | "def"; f = VAR; ps = list(param); ":"; t = typeexpr; "="; e = expr
     { FuncDef { prop = (); pos = $loc; id = f; params = ps; ret_ty = t; body = e}} 
 
 typedecl:
@@ -165,7 +165,7 @@ atom:
   | n = INT_LIT
     { IntLit { prop = (); pos = $loc; value = n}}
   | f = FLOAT_LIT
-    { FloatLit { prop = (); pos = $loc; value = n}}
+    { FloatLit { prop = (); pos = $loc; value = f}}
   | c = CHAR_LIT
     { CharLit { prop = (); pos = $loc; value = c}}
   | s = STRING_LIT
