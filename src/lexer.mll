@@ -28,6 +28,23 @@ let comment = '#' [^ '\r' '\n']* (line_terminator | eof)
 (** lexing rules **)
 rule read = parse
   | whitespace { read lexbuf }
+
+  (* keywords *)
+  | "import" { IMPORT }
+  | "as" { AS }
+  | "data" { DATA }
+  | "type" { TYPE }
+  | "def" { DEF }
+  | "if" { IF }
+  | "then" { THEN }
+  | "else" { ELSE }
+  | "match" { MATCH }
+  | "with" { WITH }
+  | "let" { LET }
+  | "in" { IN }
+  | "and" { AND }
+  | "True" { TRUE }
+  | "False" { FALSE }
   | "+" { PLUS }
   | "*" { TIMES }
   | "||" { OROR }
