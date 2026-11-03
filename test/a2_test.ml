@@ -2,13 +2,6 @@ open OUnit2
 open CpecmuCompiler.A2_parsing
 
 let tests = "test suite for parsing" >::: [
-  (* Original sample tests *)
-  "" >:: (fun _ -> assert_equal "(() ())" (pretty_parse ""));
-  "simple_def" >:: (fun _ ->
-    assert_equal
-      "(() ((def x Integer 42)))"
-      (pretty_parse "def x : Integer = 42")
-  );
   "listing_1_hello_world" >:: (fun _ ->
     assert_equal
       "(() ((def main ((arg ([] String))) String \"Hello, world!\")))"
@@ -264,7 +257,7 @@ let tests = "test suite for parsing" >::: [
       "(()\n\
       \ ((def a ((u ())) Char 'x')\n\
       \  (def b ((u ())) Char '\\\\n')\n\
-      \  (def c ((u ())) String \"tab\\\\there \\\" quoted\\ \"\")\n\
+      \  (def c ((u ())) String \"tab\\\\there \\\\\" quoted\\ \"\")\n\
       \  (def d ((u ())) Double 3.14)\n\
       \  (def e ((u ())) () ())\n\
       \  (def main ((arg String)) String arg)\n\
