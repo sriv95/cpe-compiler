@@ -4,6 +4,11 @@
  (libraries ounit2 cpecmuCompiler))
 
 (test
+ (modules a2_test)
+ (name a2_test)
+ (libraries ounit2 cpecmuCompiler))
+
+(test
  (modules a3_test)
  (name a3_test)
  (libraries ounit2 cpecmuCompiler))
