@@ -1,0 +1,10 @@
+# https://atcoder.jp/contests/abc476/tasks/abc476_b
+
+def solve (s:String) (t:String) : Bool =
+    match (s,t) with
+    | ([],[]) -> True
+    | (xhd::xtl, yhd::ytl) -> if yhd=='*' || xhd==yhd then True && (solve xtl ytl) else False
+
+def main (arg : [String]) : String =
+    match arg with
+    |   n::s::t::[] -> if solve s t then "Yes" else "No"
