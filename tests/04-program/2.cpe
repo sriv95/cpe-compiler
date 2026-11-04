@@ -1,13 +1,11 @@
-# https://atcoder.jp/contests/abc481/tasks/abc481_a
+# https://atcoder.jp/contests/abc476/tasks/abc476_a
 
 import utils
 
-def length (xs:[a]) : Integer =
-    match xs with
-    | [] -> 0
-    | hd::tl -> 1+length tl
+def solve (s : String) : String =
+    match reverse s with
+    |   hd::tl -> if hd=='e' then s::'r' else s++"er"
 
 def main (arg : [String]) : String =
-  match parseIntList arg with
-  | a::b::[] -> showInt (length (showInt (a+b)))
-  | _ -> error "expected 2 integers"
+    match arg with
+    |   s::[] -> solve s

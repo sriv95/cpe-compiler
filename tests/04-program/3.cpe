@@ -1,10 +1,13 @@
-# https://atcoder.jp/contests/abc476/tasks/abc476_b
+# https://atcoder.jp/contests/abc481/tasks/abc481_a
 
-def solve (s:String) (t:String) : Bool =
-    match (s,t) with
-    | ([],[]) -> True
-    | (xhd::xtl, yhd::ytl) -> if yhd=='*' || xhd==yhd then True && (solve xtl ytl) else False
+import utils
+
+def length (xs:[a]) : Integer =
+    match xs with
+    | [] -> 0
+    | hd::tl -> 1+length tl
 
 def main (arg : [String]) : String =
-    match arg with
-    |   n::s::t::[] -> if solve s t then "Yes" else "No"
+  match parseIntList arg with
+  | a::b::[] -> showInt (length (showInt (a+b)))
+  | _ -> error "expected 2 integers"
