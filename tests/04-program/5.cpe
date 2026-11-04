@@ -10,7 +10,7 @@ def first_mismatch_idx (a : [Integer]) (b : [Integer]) : Integer =
             if xhd!=yhd then 1 else 1+(first_mismatch_idx xtl ytl)
 
 def solve (n : Integer) (k : Integer) (a : [Integer]) : Bool =
-    let b = sort.sort a in 
+    let b = sort!sort a in 
         (1+n-(first_mismatch_idx (reverse a) (reverse b)))
         - (first_mismatch_idx a b)
         < k
