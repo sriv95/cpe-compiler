@@ -1,0 +1,11 @@
+# https://atcoder.jp/contests/abc481/tasks/abc481_a
+
+def length (xs:[a]) : Integer =
+    match xs with
+    | [] -> 0
+    | hd::tl -> 1+length tl
+
+def main (arg : [String]) : String =
+  match parseIntList arg with
+  | a::b::[] -> showInt (length (showInt (a+b)))
+  | _ -> error "expected 2 integers"
