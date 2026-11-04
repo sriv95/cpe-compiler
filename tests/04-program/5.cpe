@@ -11,8 +11,8 @@ def first_mismatch_idx (a : [Integer]) (b : [Integer]) : Integer =
 
 def solve (n : Integer) (k : Integer) (a : [Integer]) : Bool =
     let b = sort.sort a in 
-    (first_mismatch_idx a b)
-        - (1+n-(first_mismatch_idx (reverse a) (reverse b)))
+        (1+n-(first_mismatch_idx (reverse a) (reverse b)))
+        - (first_mismatch_idx a b)
         < k
 
 def main (arg : [String]) : String =
