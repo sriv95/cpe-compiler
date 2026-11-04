@@ -1,0 +1,74 @@
+import pervasives
+
+def reverse (xs : [a]) : [a] =
+  foldl (\ (acc : [a]) (x : a) : [a] => x::acc) [] xs
+
+def takeWhile (p : a -> Bool) (xs : [a]) : [a] =
+  match xs with
+  | [] -> []
+  | hd::tl -> if p hd then hd :: takeWhile p tl else []
+
+def dropWhile (p : a -> Bool) (xs : [a]) : [a] =
+  match xs with
+  | [] -> []
+  | hd::tl -> if p hd then dropWhile p tl else xs
+
+def span (p : a -> Bool) (xs : [a]) : ([a], [a]) =
+  match xs with
+  | [] -> ([], [])
+  | hd::tl -> if p hd
+              then match span p tl with
+                   | (fr, bk) -> (hd::fr, bk)
+              else ([], xs)
+
+def not (b : Bool) : Bool = match b with
+  | False -> True
+  | True -> False
+
+def break (p : a -> Bool) (xs : [a]) : ([a], [a]) =
+  span (not . p) xs
+
+def isSpace (c : Char) : Bool =
+  c == ' ' || c == '\n' || c == '\t'
+
+def words (str : String) : [String] =
+  match dropWhile isSpace str with
+  | "" -> []
+  | s -> match break isSpace s with
+         | (w, rest) -> w :: words rest
+
+def unwords (strs : [String]) : String =
+  match strs with
+  | [] -> ""
+  | hd::[] -> hd
+  | hd::tl -> hd ++ " " ++ unwords tl
+
+def charToDigit (c : Char) : Integer =
+  let a = ord c - 48
+  in if a >= 0 && a <= 9 then a else error "not a number"
+
+def digitToChar (a : Integer) : Char =
+  if a >= 0 && a <= 9 then chr (a+48) else error "not a digit"
+
+def parseInt (str : String) : Integer =
+  match str with
+  | [] -> error "not a number"
+  | hd::tl -> if hd == '-'
+        then 0 - parseInt tl
+        else foldl (\ (acc : Integer) (d : Integer) : Integer => 10 * acc + d)
+                0 (map charToDigit str)
+
+def showInt (x : Integer) : String =
+  if x == 0 then "0"
+  else if x < 0 then '-' :: showInt (-x)
+  else
+    let intToDigits (x : Integer) : [Integer] =
+          if x == 0 then []
+          else x % 10 :: intToDigits (x / 10)
+    in map digitToChar . reverse . intToDigits $ x
+
+def parseIntList (str : [String]) : [Integer] =
+  map parseInt str
+
+def showIntList (xs : [Integer]) : String =
+  unwords . map showInt $ xs
