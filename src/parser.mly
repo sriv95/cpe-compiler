@@ -53,7 +53,7 @@ open Ast
 
 (** rules section **)
 start:
-  | p = program; EOF { p }
+  | p = prog; EOF { p }
 
 prog:
   | imps = list(import); defs = list(defn)
