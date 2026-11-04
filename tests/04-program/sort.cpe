@@ -1,0 +1,18 @@
+import utils
+
+def sort (xs : [Integer]) : [Integer] =
+  match xs with
+  | [] -> []
+  | x::xs ->
+      match partition x xs with
+      | (lt, ge) -> (sort lt) ++ (x::[]) ++ (sort ge)
+
+def partition (pivot : Integer) (xs : [Integer]) : ([Integer], [Integer]) =
+  match xs with
+  | [] -> ([], [])
+  | x::xs ->
+      match partition pivot xs with
+      | (lt, ge) -> if x < pivot then (x::lt, ge) else (lt, x::ge)
+
+def main (arg : [String]) : String =
+  showIntList . sort . parseIntList $ arg
