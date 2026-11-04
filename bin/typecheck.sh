@@ -14,7 +14,7 @@ for f in "$@"; do
 done | dune utop src -- -stdin >/dev/null || exit 1
 
 # print written output
-for f in "$@"; do
-  echo "=== File: $f"
-  cat "out/03-typechecking/$f"
-done
+# for f in "$@"; do
+#   echo "=== File: $f"
+#   cat "out/03-typechecking/$f"
+# done

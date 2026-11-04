@@ -1,0 +1,1 @@
+def f (x : Char) (y : Char) : Char = x + y

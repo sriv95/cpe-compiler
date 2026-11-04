@@ -1,0 +1,1 @@
+def f (x : Bool) (y : Integer) : Bool = x && y

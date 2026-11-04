@@ -1,0 +1,1 @@
+def f (x : Integer) (y : Bool) : Bool = x == y
