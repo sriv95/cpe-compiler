@@ -1,5 +1,7 @@
 # https://atcoder.jp/contests/abc481/tasks/abc481_a
 
+import utils
+
 def length (xs:[a]) : Integer =
     match xs with
     | [] -> 0
