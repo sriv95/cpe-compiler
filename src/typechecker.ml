@@ -52,17 +52,33 @@ let initial_env () : env =
 (* 3. ฟังก์ชันประเมิน Type ของ Operator (บังคับ Type ซ้ายและขวาต้องเหมือนกัน)*)
 let type_binop op (tl : ty) (tr : ty) : ty =
   match op with
-  | "+" | "-" | "*" | "//" | "%" ->
+  | "+" | "-" | "*" ->
       if tl = TInt && tr = TInt then TInt
       else if tl = TDouble && tr = TDouble then TDouble
-      else error ("Operator " ^ op ^ " requires strictly matching numeric types (Int/Int or Double/Double)")
+      else if tl = TInt && tr = TDouble then TDouble
+      else if tl = TDouble && tr = TInt then TDouble
+      else error ("Operator " ^ op ^ " requires numeric types (Int or Double)")
+  | "//" ->
+      if tl = TInt && tr = TInt then TInt
+      else if tl = TDouble && tr = TInt then TInt
+      else error ("Operator " ^ op ^ " requires Int only")
+  | "%" ->
+      if tl = TInt && tr = TInt then TInt
+      else if tl = TDouble && tr = TInt then TDouble
+      else error ("Operator " ^ op ^ " requires Int % Int or Double % Int")
   | "/" ->
-      if tl = TInt && tr = TInt then TDouble (* กฎ ARITH-INT-DIV บังคับหารคืนค่า Double[cite: 12] *)
+      if tl = TInt && tr = TInt then TDouble
       else if tl = TDouble && tr = TDouble then TDouble
-      else error "Operator / requires Int/Int or Double/Double"
-  | "==" | "!=" | "<" | "<=" | ">" | ">=" ->
+      else if tl = TInt && tr = TDouble then TDouble
+      else if tl = TDouble && tr = TInt then TDouble
+      else error "Operator / requires numeric types (Int or Doulbe)"
+  | "==" | "!=" ->
       if tl = tr then TBool
       else error ("Comparison operator " ^ op ^ " requires strictly matching operands")
+  | "<" | "<=" | ">" | ">=" ->
+      if tl = TInt && tr = TInt then TBool
+      else if tl = TDouble && tr = TDouble then TBool
+      else error ("Comparison operator " ^ op ^ " requires strictly matching operands with numeric type")
   | "&&" | "||" ->
       if tl = TBool && tr = TBool then TBool
       else error ("Logical operator " ^ op ^ " requires Bool operands")
