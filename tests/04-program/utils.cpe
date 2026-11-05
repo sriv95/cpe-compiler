@@ -64,7 +64,7 @@ def showInt (x : Integer) : String =
   else
     let intToDigits (x : Integer) : [Integer] =
           if x == 0 then []
-          else x % 10 :: intToDigits (x / 10)
+          else x % 10 :: intToDigits (x // 10)
     in map digitToChar . reverse . intToDigits $ x
 
 def parseIntList (str : [String]) : [Integer] =

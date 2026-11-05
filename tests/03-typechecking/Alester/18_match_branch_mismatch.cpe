@@ -3,4 +3,4 @@
 def f (xs : [Integer]) : Integer =
   match xs with
   | [] -> 0
-  | hd::tl -> true
+  | hd::tl -> True

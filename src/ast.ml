@@ -93,6 +93,18 @@ let prop_of_ptrn (p : 't ptrn) : 't = match p with
   | UnitPtrn r -> r.prop | IntPtrn r -> r.prop | FloatPtrn r -> r.prop| BoolPtrn r -> r.prop
   | CharPtrn r -> r.prop | StringPtrn r -> r.prop
 
+let pos_of_expr (e : 't expr) : pos = match e with
+  | IntLit r -> r.pos | FloatLit r -> r.pos | BoolLit r -> r.pos
+  | CharLit r -> r.pos | StringLit r -> r.pos | UnitLit r -> r.pos
+  | NilLit r -> r.pos | VarExpr r -> r.pos | ConExpr r -> r.pos
+  | NamespacedExpr r -> r.pos | TupleExpr r -> r.pos | UnOpExpr r -> r.pos
+  | BinOpExpr r -> r.pos | AppExpr r -> r.pos | LambdaExpr r -> r.pos
+  | IfExpr r -> r.pos | LetExpr r -> r.pos | MatchExpr r -> r.pos
+
+let pos_of_typeexpr (t : typeexpr) : pos = match t with
+  | TypeAtom r -> r.pos | ListType r -> r.pos | PairType r -> r.pos
+  | FuncType r -> r.pos | AppType r -> r.pos
+
 (* ---------- pretty-printing (S-expressions) ---------- *)
 (* ---------- pretty-printing (S-expressions) ---------- *)
 let s_expr_of_list (items : string list) : string =

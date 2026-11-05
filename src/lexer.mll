@@ -7,6 +7,14 @@ let error msg lexbuf =
   raise (SyntaxError(msg, Lexing.lexeme_start_p lexbuf))
 
 let string_buf = Buffer.create 256
+
+(* advance the line counter once for each line break in the current lexeme
+   ("\r\n" counts as a single break) *)
+let count_lines lexbuf =
+  let s = Lexing.lexeme lexbuf in
+  String.iteri (fun i c ->
+      if c = '\n' || (c = '\r' && not (i + 1 < String.length s && s.[i + 1] = '\n'))
+      then Lexing.new_line lexbuf) s
 }
 
 (** regex patterns **)
@@ -27,8 +35,8 @@ let comment = '#' [^ '\r' '\n']* (line_terminator | eof)
 
 (** lexing rules **)
 rule read = parse
-  | whitespace { read lexbuf }
-  | comment { read lexbuf }
+  | whitespace { count_lines lexbuf; read lexbuf }
+  | comment { count_lines lexbuf; read lexbuf }
   | "(*" { comment_ml (Lexing.lexeme_start_p lexbuf) lexbuf }
 
   (* keywords *)
