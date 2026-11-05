@@ -12,6 +12,7 @@ type ty =
   | TPair of ty * ty
   | TFun of ty * ty
   | TData of string * ty list
+  | TVar of string
 
 let rec string_of_ty (t : ty) : string =
   match t with
@@ -26,6 +27,7 @@ let rec string_of_ty (t : ty) : string =
   | TData (n, []) -> n
   | TData (n, args) ->
       "(" ^ n ^ " " ^ String.concat " " (List.map string_of_ty args) ^ ")"
+  | TVar v -> v
 
 (* สมมติฐานโครงสร้าง Environment สำหรับเก็บตัวแปรที่ค้นพบ *)
 module SM = Map.Make(String)
@@ -83,10 +85,28 @@ let type_binop op (tl : ty) (tr : ty) : ty =
       if tl = TBool && tr = TBool then TBool
       else error ("Logical operator " ^ op ^ " requires Bool operands")
 
+  (* :: (เอาสมาชิก tl ไปต่อหน้าลิสต์ tr) *)
+  | "::" ->
+      (match tr with
+       | TList (TVar _) -> TList tl (* กรณี x :: [] = x *)
+       | TList t -> 
+           if tl = t then TList tl 
+           else error ("List elements must have the same type")
+       | _ -> error "Right operand of :: must be a list")
+
+  (* ++ (เอาลิสต์ tl มาต่อกับลิสต์ tr) *)
+  | "++" ->
+      (match tl, tr with
+       | TList (TVar _), TList _ -> tr (* [] ++ list = list *)
+       | TList _, TList (TVar _) -> tl (* list ++ [] = list *)
+       | TList t1, TList t2 -> 
+           if t1 = t2 then TList t1 
+           else error "Lists in ++ must have the same type"
+       | _ -> error "Operator ++ requires two lists")
+
   | _ -> error ("Unknown binary operator: " ^ op)
 
 
-(* 6. ฟังก์ชันตรวจสอบลายเซ็น (Signature) ของ main[cite: 1] *)
 let check_main_function (env : env) =
   match SM.find_opt "main" env.vals with
   | None -> () 
@@ -129,6 +149,7 @@ let rec tc (env : env) (e : unit expr) : ty expr =
   | FloatLit r -> FloatLit { r with prop = TDouble }
   | BoolLit r -> BoolLit { r with prop = TBool }
   | StringLit r -> StringLit { r with prop = TList TChar }
+  | NilLit r -> NilLit { r with prop = TList (TVar "a") } 
   | VarExpr r ->
       (match SM.find_opt r.id env.vals with
        | Some t -> VarExpr { r with prop = t }
