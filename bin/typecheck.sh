@@ -13,8 +13,8 @@ for f in "$@"; do
   echo "CpecmuCompiler.A3_typechecking.typecheck_file \"$f\";;"
 done | dune utop src -- -stdin >/dev/null || exit 1
 
-# print written output
-# for f in "$@"; do
-#   echo "=== File: $f"
-#   cat "out/03-typechecking/$f"
-# done
+print written output
+for f in "$@"; do
+  echo "=== File: $f"
+  cat "out/03-typechecking/$f"
+done
