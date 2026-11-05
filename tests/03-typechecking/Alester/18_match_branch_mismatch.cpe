@@ -4,4 +4,3 @@ def f (xs : [Integer]) : Integer =
   match xs with
   | [] -> 0
   | hd::tl -> true
-def main (arg : String) : String = arg

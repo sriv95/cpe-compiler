@@ -1,0 +1,1 @@
+def f (x : Integer) : Integer = x * 2.5 + 1

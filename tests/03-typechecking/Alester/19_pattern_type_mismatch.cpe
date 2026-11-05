@@ -3,4 +3,3 @@
 def f (xs : [Integer]) : Integer =
   match xs with
   | (a, b) -> a
-def main (arg : String) : String = arg

@@ -1,0 +1,108 @@
+# every pattern kind in its own def; all should typecheck
+
+# integer literal patterns
+def intLit (n : Integer) : String =
+  match n with
+  | 0 -> "zero"
+  | 1 -> "one"
+  | _ -> "many"
+
+
+# floating-point literal patterns
+def floatLit (x : Double) : String =
+  match x with
+  | 0.0 -> "zero"
+  | 1.5 -> "one and a half"
+  | _ -> "other"
+
+
+# boolean literal patterns
+def boolLit (b : Bool) : Integer =
+  match b with
+  | True -> 1
+  | False -> 0
+
+# character literal patterns (including escapes)
+def charLit (c : Char) : Integer =
+  match c with
+  | 'a' -> 1
+  | '\n' -> 2
+  | '\\' -> 3
+  | _ -> 0
+
+# string literal patterns (including escapes)
+def stringLit (s : String) : Integer =
+  match s with
+  | "" -> 0
+  | "hello" -> 1
+  | "say hi\n" -> 2
+  | _ -> 3
+
+# unit literal pattern
+def unitLit (u : ()) : Integer =
+  match u with
+  | () -> 42
+
+# pair patterns
+def pairPat (p : (Integer, Bool)) : Integer =
+  match p with
+  | (0, True) -> 1
+  | (n, False) -> n
+  | (_, _) -> 0
+
+# empty list pattern
+def emptyList (xs : [Integer]) : Bool =
+  match xs with
+  | [] -> True
+  | _ -> False
+
+# cons patterns
+def consPat (xs : [Integer]) : Integer =
+  match xs with
+  | [] -> 0
+  | hd::tl -> hd
+
+# wildcard patterns
+def wildcardCons (xs : [Integer]) : Bool =
+  match xs with
+  | [] -> True
+  | _::_ -> False
+
+def wildcardOnly (x : Integer) : Integer =
+  match x with
+  | _ -> 0
+
+# nested patterns: cons inside cons (from spec section 6.6)
+def firstTwoEqual (l : [Integer]) : Bool =
+  match l with
+  | [] -> True
+  | x1::x2::xs -> x1 == x2
+  | hd::tl -> False
+
+# nested patterns: literals inside cons
+def startsWithOneTwo (xs : [Integer]) : Bool =
+  match xs with
+  | 1::2::_ -> True
+  | _ -> False
+
+# nested patterns: pair inside cons
+def sumTrue (xs : [(Integer, Bool)]) : Integer =
+  match xs with
+  | [] -> 0
+  | (n, True)::rest -> n + sumTrue rest
+  | (_, False)::rest -> sumTrue rest
+
+# nested patterns: cons inside pair
+def headsSum (p : ([Integer], [Integer])) : Integer =
+  match p with
+  | (a::_, b::_) -> a + b
+  | ([], _) -> 0
+  | (_, []) -> 0
+
+# nested patterns: pair inside pair, with a char literal
+def nestedPair (p : (Char, (Integer, String))) : Integer =
+  match p with
+  | ('x', (0, "")) -> 1
+  | (_, (n, _)) -> n
+
+def main (arg : String) : String = arg  # does nothing

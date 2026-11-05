@@ -3,4 +3,3 @@
 def swap (p : (a, b)) : (b, a) =
   match p with
   | (x, y) -> (y, x)
-def main (arg : String) : String = arg

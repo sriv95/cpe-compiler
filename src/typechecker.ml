@@ -12,6 +12,7 @@ type ty =
   | TPair of ty * ty
   | TFun of ty * ty
   | TData of string * ty list
+  | TVar of string
 
 let rec string_of_ty (t : ty) : string =
   match t with
@@ -26,6 +27,7 @@ let rec string_of_ty (t : ty) : string =
   | TData (n, []) -> n
   | TData (n, args) ->
       "(" ^ n ^ " " ^ String.concat " " (List.map string_of_ty args) ^ ")"
+  | TVar v -> v
 
 (* สมมติฐานโครงสร้าง Environment สำหรับเก็บตัวแปรที่ค้นพบ *)
 module SM = Map.Make(String)
@@ -52,25 +54,59 @@ let initial_env () : env =
 (* 3. ฟังก์ชันประเมิน Type ของ Operator (บังคับ Type ซ้ายและขวาต้องเหมือนกัน)*)
 let type_binop op (tl : ty) (tr : ty) : ty =
   match op with
-  | "+" | "-" | "*" | "//" | "%" ->
+  | "+" | "-" | "*" ->
       if tl = TInt && tr = TInt then TInt
       else if tl = TDouble && tr = TDouble then TDouble
-      else error ("Operator " ^ op ^ " requires strictly matching numeric types (Int/Int or Double/Double)")
+      else if tl = TInt && tr = TDouble then TDouble
+      else if tl = TDouble && tr = TInt then TDouble
+      else error ("Operator " ^ op ^ " requires numeric types (Int or Double)")
+  | "//" ->
+      if tl = TInt && tr = TInt then TInt
+      else if tl = TDouble && tr = TInt then TInt
+      else error ("Operator " ^ op ^ " requires Int only")
+  | "%" ->
+      if tl = TInt && tr = TInt then TInt
+      else if tl = TDouble && tr = TInt then TDouble
+      else error ("Operator " ^ op ^ " requires Int % Int or Double % Int")
   | "/" ->
-      if tl = TInt && tr = TInt then TDouble (* กฎ ARITH-INT-DIV บังคับหารคืนค่า Double[cite: 12] *)
+      if tl = TInt && tr = TInt then TDouble
       else if tl = TDouble && tr = TDouble then TDouble
-      else error "Operator / requires Int/Int or Double/Double"
-  | "==" | "!=" | "<" | "<=" | ">" | ">=" ->
+      else if tl = TInt && tr = TDouble then TDouble
+      else if tl = TDouble && tr = TInt then TDouble
+      else error "Operator / requires numeric types (Int or Doulbe)"
+  | "==" | "!=" ->
       if tl = tr then TBool
       else error ("Comparison operator " ^ op ^ " requires strictly matching operands")
+  | "<" | "<=" | ">" | ">=" ->
+      if tl = TInt && tr = TInt then TBool
+      else if tl = TDouble && tr = TDouble then TBool
+      else error ("Comparison operator " ^ op ^ " requires strictly matching operands with numeric type")
   | "&&" | "||" ->
       if tl = TBool && tr = TBool then TBool
       else error ("Logical operator " ^ op ^ " requires Bool operands")
 
+  (* :: (เอาสมาชิก tl ไปต่อหน้าลิสต์ tr) *)
+  | "::" ->
+      (match tr with
+       | TList (TVar _) -> TList tl (* กรณี x :: [] = x *)
+       | TList t -> 
+           if tl = t then TList tl 
+           else error ("List elements must have the same type")
+       | _ -> error "Right operand of :: must be a list")
+
+  (* ++ (เอาลิสต์ tl มาต่อกับลิสต์ tr) *)
+  | "++" ->
+      (match tl, tr with
+       | TList (TVar _), TList _ -> tr (* [] ++ list = list *)
+       | TList _, TList (TVar _) -> tl (* list ++ [] = list *)
+       | TList t1, TList t2 -> 
+           if t1 = t2 then TList t1 
+           else error "Lists in ++ must have the same type"
+       | _ -> error "Operator ++ requires two lists")
+
   | _ -> error ("Unknown binary operator: " ^ op)
 
 
-(* 6. ฟังก์ชันตรวจสอบลายเซ็น (Signature) ของ main[cite: 1] *)
 let check_main_function (env : env) =
   match SM.find_opt "main" env.vals with
   | None -> () 
@@ -84,13 +120,15 @@ let check_main_function (env : env) =
       if mty <> expected_main_ty then
         error "main function must have exactly type [String] -> String"
 
-let ty_of (te : typeexpr) : ty =
+let rec ty_of (te : typeexpr) : ty =
   match te with
   | TypeAtom { id = "Integer"; _ } -> TInt
   | TypeAtom { id = "Double"; _ } -> TDouble
   | TypeAtom { id = "Bool"; _ } -> TBool
   | TypeAtom { id = "Char"; _ } -> TChar
   | TypeAtom { id = "()"; _ } -> TUnit
+  | TypeAtom { id = "String"; _ } -> TList TChar (* สเปกระบุว่า String = [Char][cite: 5] *)
+  | ListType r -> TList (ty_of r.elem_ty)        (* จัดการ [String] *)
   | _ -> failwith "unimplemented"
 
 let ty_of_param (p : param) : ty =
@@ -110,6 +148,8 @@ let rec tc (env : env) (e : unit expr) : ty expr =
   | IntLit r -> IntLit { r with prop = TInt }
   | FloatLit r -> FloatLit { r with prop = TDouble }
   | BoolLit r -> BoolLit { r with prop = TBool }
+  | StringLit r -> StringLit { r with prop = TList TChar }
+  | NilLit r -> NilLit { r with prop = TList (TVar "a") } 
   | VarExpr r ->
       (match SM.find_opt r.id env.vals with
        | Some t -> VarExpr { r with prop = t }
@@ -127,11 +167,11 @@ let rec tc (env : env) (e : unit expr) : ty expr =
       BinOpExpr { r with prop = t; left = l; right = rt }
   | _ -> failwith "unimplemented"
 
-let typecheck_defn (d : unit defn) : ty defn =
+let typecheck_defn (env: env) (d : unit defn) : ty defn =
   match d with
   | FuncDef r ->
       let fty = fun_ty r.params r.ret_ty in
-      let body = tc (add_params (initial_env ()) r.params) r.body in
+      let body = tc (add_params env r.params) r.body in
       let expected = ty_of r.ret_ty and actual = prop_of_expr body in
       if expected <> actual then
         error_at r.pos
@@ -140,11 +180,31 @@ let typecheck_defn (d : unit defn) : ty defn =
       FuncDef { r with prop = fty; body }
   | DataDef _ | TypeDef _ -> failwith "unimplemented"
 
+
+let build_global_env (defns : unit defn list) : env =
+  let env = initial_env () in
+  List.fold_left (fun curr_env def ->
+    match def with
+    | FuncDef r -> 
+        let fty = fun_ty r.params r.ret_ty in
+        { vals = SM.add r.id fty curr_env.vals }
+    | _ -> curr_env (* ข้าม DataDef และ TypeDef ไปก่อนในตอนนี้ *)
+  ) env defns
+
+  
 (* TODO: define your own type checking *)
 let typecheck_prog(p : unit prog) : ty prog option =
   try
     match p with
-    | Prog r -> Some (Prog { r with defns = List.map typecheck_defn r.defns })
+    | Prog r -> 
+      let global_env = build_global_env r.defns in
+        
+      (* 2. เรียกใช้ฟังก์ชัน check_main เพื่อดูว่า main พิมพ์ type ถูกไหม *)
+      check_main_function global_env;
+        
+        (* 3. ส่ง global_env ไปใช้ตรวจ body ของแต่ละฟังก์ชันต่อไป *)
+      let checked_defns = List.map (typecheck_defn global_env) r.defns in
+      Some (Prog { r with defns = checked_defns })
   with TypeError msg -> prerr_endline msg; None
 
 let typecheck(p : unit prog) : bool =

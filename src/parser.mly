@@ -224,6 +224,8 @@ apattern:
     { ConsPtrn { prop = (); pos = $loc; id = c; args = []}}
   | n = INT_LIT
     { IntPtrn { prop = (); pos = $loc; value = n}}
+  | f = FLOAT_LIT
+    { FloatPtrn { prop = (); pos = $loc; value = f}}
   | c = CHAR_LIT
     { CharPtrn { prop = (); pos = $loc; value = c}}
   | s = STRING_LIT

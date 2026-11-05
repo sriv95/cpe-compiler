@@ -1,0 +1,7 @@
+# นำลิสต์ของ Integer สองตัวมาต่อกัน
+def concatInts (l1: [Integer]) (l2: [Integer]): [Integer] =
+    l1 ++ l2
+
+def main (arg: [String]): String =
+    # String คือลิสต์ของ Char ดังนั้นจึงสามารถใช้ ++ นำข้อความมาต่อกันได้
+    "Hello" ++ " " ++ "World"
