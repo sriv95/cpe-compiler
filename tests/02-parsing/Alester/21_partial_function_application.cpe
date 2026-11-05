@@ -1,0 +1,4 @@
+def foldl (accum : b -> a -> b) (init : b)(xs : [a]) : b =
+    match xs with
+    | [] -> init
+    | hd::tl -> foldl accum (accum init hd) tl

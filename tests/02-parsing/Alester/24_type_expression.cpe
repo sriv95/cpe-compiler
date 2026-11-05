@@ -1,0 +1,237 @@
+# every type-expression and type-declaration feature; all should typecheck
+
+# built-in atomic types
+
+def intId (n : Integer) : Integer = n + 1
+
+def dblId (x : Double) : Double = x + 1.5
+
+def boolId (b : Bool) : Bool = b && True
+
+def charId (c : Char) : Char = c
+
+def strId (s : String) : String = s
+
+# pair types
+
+def mkPair (n : Integer) (b : Bool) : (Integer, Bool) = (n, b)
+
+def nestedPair (p : (Integer, (Bool, Char))) : (Integer, (Bool, Char)) = p
+
+def pairOfPairs (p : ((Integer, Integer), (Bool, Bool))) : Integer =
+  match p with
+  | ((a, _), _) -> a
+
+def swap (p : (a, b)) : (b, a) =
+  match p with
+  | (x, y) -> (y, x)
+
+# list types
+
+def intList (xs : [Integer]) : [Integer] = 1 :: xs
+
+def listOfLists (xss : [[Integer]]) : [[Integer]] = [] :: xss
+
+def listOfPairs (ps : [(Integer, Bool)]) : [(Integer, Bool)] = ps
+
+def listOfFns (fs : [Integer -> Integer]) : [Integer -> Integer] = fs
+
+def emptyBools (u : ()) : [Bool] = []
+
+# function types 
+
+def apply (f : Integer -> Integer) (x : Integer) : Integer = f x
+
+def twice (f : a -> a) (x : a) : a = f (f x)
+
+def curried (f : Integer -> Integer -> Integer) : Integer = f 1 2
+
+def rightAssoc (f : Integer -> (Integer -> Integer)) : Integer -> Integer -> Integer = f
+
+def higher (g : (Integer -> Integer) -> Integer) (f : Integer -> Integer) : Integer = g f
+
+def adder (n : Integer) : Integer -> Integer =
+  \ (x : Integer) : Integer => x + n
+
+def compose (f : b -> c) (g : a -> b) (x : a) : c = f (g x)
+
+def partial (n : Integer) : Integer = curried (\ (a : Integer) (b : Integer) : Integer => a + b + n)
+
+# type variables
+
+def id (x : a) : a = x
+
+def const (x : a) (y : b) : a = x
+
+def firstOf3 (x : a) (y : b) (z : c) : a = x
+
+# user-defined data types
+
+# enumeration: constructors without parameters
+data Color = Red | Green | Blue
+
+# constructors with one or more parameters, including pair and function types
+data Shape = Circle Double | Rect Double Double | Point (Integer, Integer) | Fn (Integer -> Integer)
+
+# type and constructor names live in separate namespaces
+data Box a = Box a
+
+def colorCode (c : Color) : Integer =
+  match c with
+  | Red -> 0
+  | Green -> 1
+  | Blue -> 2
+
+def area (s : Shape) : Double =
+  match s with
+  | Circle r -> r * r
+  | Rect w h -> w * h
+  | Point _ -> 0.0
+  | Fn _ -> 0.0
+
+def mkRect (w : Double) (h : Double) : Shape = Rect w h
+
+def mkBox (n : Integer) : Box Integer = Box n
+
+def unbox (b : Box a) : a =
+  match b with
+  | Box x -> x
+
+# polymorphic data types 
+
+data Maybe a = Nothing | Just a
+data Either a b = Left a | Right b
+data Logged a = Log String a
+
+def fromMaybe (d : a) (m : Maybe a) : a =
+  match m with
+  | Nothing -> d
+  | Just x -> x
+
+def leftOrZero (e : Either Integer Bool) : Integer =
+  match e with
+  | Left n -> n
+  | Right _ -> 0
+
+def mkLeft (n : Integer) : Either Integer Bool = Left n
+
+def mkRight (b : Bool) : Either Integer Bool = Right b
+
+def logIt (n : Integer) : Logged Integer = Log "value" n
+
+def logValue (l : Logged a) : a =
+  match l with
+  | Log _ v -> v
+
+# type recursion 
+
+data IntList = EmptyIntList | ConsIntList Integer IntList
+
+data List a = Empty | Cons a (List a)
+
+data Tree a = Leaf | Node a (Tree a) (Tree a)
+
+def sumIntList (l : IntList) : Integer =
+  match l with
+  | EmptyIntList -> 0
+  | ConsIntList h t -> h + sumIntList t
+
+def length (l : List a) : Integer =
+  match l with
+  | Empty -> 0
+  | Cons _ t -> 1 + length t
+
+def size (t : Tree a) : Integer =
+  match t with
+  | Leaf -> 0
+  | Node _ l r -> 1 + size l + size r
+
+def singleton (x : a) : Tree a = Node x Leaf Leaf
+
+# mutual type recursion
+
+data Even = Zero | ESucc Odd
+data Odd = OSucc Even
+
+def evenToInt (e : Even) : Integer =
+  match e with
+  | Zero -> 0
+  | ESucc o -> 1 + oddToInt o
+
+def oddToInt (o : Odd) : Integer =
+  match o with
+  | OSucc e -> 1 + evenToInt e
+
+# mutually recursive with a polymorphic parameter
+data Forest a = Forest [Rose a]
+data Rose a = Rose a (Forest a)
+
+def roseValue (r : Rose a) : a =
+  match r with
+  | Rose v _ -> v
+
+# type applications
+
+def nestedApp (x : Maybe (Either Integer (List Bool))) : Maybe (Either Integer (List Bool)) = x
+
+def listOfBoxes (xs : [Box Integer]) : [Box Integer] = xs
+
+def appInPair (p : (Maybe Integer, Tree Char)) : (Maybe Integer, Tree Char) = p
+
+def appInFn (f : Maybe Integer -> Either Integer Bool) (m : Maybe Integer) : Either Integer Bool = f m
+
+def treeOfLists (t : Tree [Integer]) : Tree [Integer] = t
+
+# type synonyms
+
+type Name = String
+type Names = [Name]
+type IntPair = (Integer, Integer)
+type Transform = Integer -> Integer
+type IntTree = Tree Integer
+
+def greet (n : Name) : Name = n
+
+def allNames (ns : Names) : Names = ns
+
+def sumPair (p : IntPair) : Integer =
+  match p with
+  | (a, b) -> a + b
+
+def applyT (t : Transform) (n : Integer) : Integer = t n
+
+def treeSize (t : IntTree) : Integer = size t
+
+# a synonym and its expansion are interchangeable
+def synonymMix (n : Name) : String = n
+def synonymMix2 (s : String) : Name = s
+
+# polymorphic type synonyms
+
+data Map domain codomain = MEmpty | MNode domain codomain (Map domain codomain) (Map domain codomain)
+
+type Endomap s = Map s s
+type Table v = Map String v
+type Pair a b = (a, b)
+type Pred a = a -> Bool
+type Endo a = a -> a
+
+def emptyEndomap (u : ()) : Endomap Integer = MEmpty
+
+def insertSelf (k : s) (m : Endomap s) : Endomap s = MNode k k m MEmpty
+
+def emptyTable (u : ()) : Table Integer = MEmpty
+
+def mkPairSyn (x : a) (y : b) : Pair a b = (x, y)
+
+def pairSynUse (p : Pair Integer Bool) : Integer =
+  match p with
+  | (n, _) -> n
+
+def check (p : Pred Integer) (n : Integer) : Bool = p n
+
+def checkPoly (p : Pred a) (x : a) : Bool = p x
+
+def applyEndo (f : Endo a) (x : a) : a = f x
+
+def main (arg : String) : String = arg  # does nothing
