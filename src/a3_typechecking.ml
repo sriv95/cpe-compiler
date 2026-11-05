@@ -10,12 +10,17 @@ let typecheck_string (s : string) : bool =
     tc_res
 
 let typecheck_file (s : string) : bool =
-  match parse_file s with
-  | None -> print_string (s ^ ": syntax error\n"); false
-  | Some prog -> let tc_res = typecheck prog in
-    print_string (s ^ ": typechecking " ^ (if tc_res then "passed" else "failed"));
+  try
+    match parse_file s with
+    | None -> print_string (s ^ ": syntax error\n"); false
+    | Some prog -> let tc_res = typecheck prog in
+      print_string (s ^ ": typechecking " ^ (if tc_res then "passed" else "failed"));
+      print_newline ();
+      tc_res
+  with e ->
+    print_string (s ^ ": crashed: " ^ Printexc.to_string e);
     print_newline ();
-    tc_res
+    false
 
 let rec repl_loop () =
   print_string "enter file name: ";
