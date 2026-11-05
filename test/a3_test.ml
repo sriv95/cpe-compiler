@@ -38,6 +38,13 @@ let rejects ?modules ?(main = true) ?contains src =
                assert_failure (Printf.sprintf "error %S does not mention %S" msg sub))
 
 let tests = "typechecking" >::: [
+  "largest integer literal" >:: (fun _ ->
+    assert_bool "2^62-1 is accepted"
+      (A2_parsing.parse "def x : Integer = 4611686018427387903" <> None));
+  "integer literal out of range" >:: (fun _ ->
+    assert_bool "2^62 is rejected"
+      (A2_parsing.parse "def x : Integer = 4611686018427387904" = None));
+
   "literals" >:: accepts
     "def f (u : ()) : (Integer, (Double, (Bool, (Char, String)))) =\n\
     \  (1, (2.5, (True, ('c', \"s\"))))";

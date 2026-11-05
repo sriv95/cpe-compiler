@@ -14,3 +14,15 @@
 (menhir
  (modules s_parser)
  (flags --strict --dump --explain))
+
+; the C runtime is embedded so that the compiler is self-contained
+(rule
+ (targets rt_source.ml)
+ (deps ../runtime/cpe_rt.c)
+ (action
+  (with-stdout-to
+   rt_source.ml
+   (progn
+    (echo "let c_source = {cperuntime|")
+    (cat ../runtime/cpe_rt.c)
+    (echo "|cperuntime}\n")))))

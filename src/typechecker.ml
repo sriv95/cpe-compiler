@@ -30,9 +30,11 @@ type ty =
 
 and meta = Unbound of int | Link of ty
 
-type scheme = { vars : string list; body : ty }
+(* [sym] is the global symbol of a top-level definition ("" for locals);
+   the code generator uses it to find the definition again *)
+type scheme = { vars : string list; body : ty; sym : string }
 
-let mono t = { vars = []; body = t }
+let mono t = { vars = []; body = t; sym = "" }
 
 let counter = ref 0
 let fresh () = incr counter; TMeta (ref (Unbound !counter))
@@ -159,6 +161,8 @@ type ctor_info = {
   c_key : string;               (* key of the parent type *)
   c_params : string list;       (* type parameters of the parent type *)
   c_args : ty list;             (* argument types, over [TVar c_params] *)
+  c_tag : int;                  (* position among the constructors of its type *)
+  c_nctors : int;               (* number of constructors of its type *)
 }
 
 type genv = {
@@ -185,10 +189,11 @@ let builtin_genv : genv =
             |> SM.add "String" (atom (TList TChar));
     ctors = SM.empty;
     vals = SM.empty
-           |> SM.add "ord" (mono (TFun (TChar, TInt)))
-           |> SM.add "chr" (mono (TFun (TInt, TChar)))
+           |> SM.add "ord" { (mono (TFun (TChar, TInt))) with sym = "$ord" }
+           |> SM.add "chr" { (mono (TFun (TInt, TChar))) with sym = "$chr" }
            |> SM.add "error"
-                { vars = ["a"]; body = TFun (TList TChar, TVar "a") };
+                { vars = ["a"]; body = TFun (TList TChar, TVar "a");
+                  sym = "$error" };
     nss = SM.empty }
 
 (* ---------- type expressions ---------- *)
@@ -536,7 +541,7 @@ and infer_let env pos bindings body (_orig : unit expr) : ty expr =
       | VarBinding v -> SM.add v.id (mono v.prop) l
       | FuncBinding f ->
           let vars = List.filter (fun x -> not (SS.mem x env.tvs)) (tvars_of f.prop) in
-          SM.add f.id { vars; body = f.prop } l) env.locals bindings' in
+          SM.add f.id { vars; body = f.prop; sym = "" } l) env.locals bindings' in
   let body' = infer { env with locals } body in
   LetExpr { prop = prop_of_expr body'; pos; bindings = bindings'; body = body' }
 
@@ -609,7 +614,8 @@ let declare_types (g : genv) (prefix : string) (defns : unit defn list)
   let ctors = ref g.ctors in
   let own_ctors = ref SS.empty in
   List.iter (fun (name, params, _, cs) ->
-      List.iter (fun c ->
+      let nctors = List.length cs in
+      List.iteri (fun c_tag c ->
           let cname, cargs, cpos = (match c with
               | SimpleCons { id; pos } -> (id, [], pos)
               | ParamCons { id; args; pos } -> (id, args, pos)) in
@@ -622,7 +628,8 @@ let declare_types (g : genv) (prefix : string) (defns : unit defn list)
           in
           let c_args = List.map (convert_type ~lookup ~tv_ok) cargs in
           ctors := SM.add cname
-              { c_key = prefix ^ name; c_params = params; c_args } !ctors;
+              { c_key = prefix ^ name; c_params = params; c_args; c_tag;
+                c_nctors = nctors } !ctors;
           own_ctors := SS.add cname !own_ctors) cs) (List.rev !data);
   ({ g with types = !types; ctors = !ctors }, !own_types, !own_ctors)
 
@@ -657,7 +664,15 @@ type fitem = {
 
 let main_ty = TFun (TList (TList TChar), TList TChar)
 
+(* a fully checked module, as needed by the code generator *)
+type cmodule = {
+  cm_id : string;               (* "_root" for the primary file *)
+  cm_prog : ty prog;
+  cm_genv : genv;               (* everything visible inside the module *)
+}
+
 let rec check_module ~(load : loader) ~(cache : (string, modul) Hashtbl.t)
+    ~(order : cmodule list ref)
     ~(stack : string list) ~(prefix : string) (Prog p : unit prog)
   : modul * ty prog =
   (* imports *)
@@ -671,7 +686,7 @@ let rec check_module ~(load : loader) ~(cache : (string, modul) Hashtbl.t)
          | None -> error_at pos ("cannot import " ^ id)
          | Some imported ->
              let m, _ =
-               check_module ~load ~cache ~stack:(id :: stack)
+               check_module ~load ~cache ~order ~stack:(id :: stack)
                  ~prefix:(id ^ ".") imported in
              Hashtbl.add cache id m;
              m)
@@ -693,7 +708,10 @@ let rec check_module ~(load : loader) ~(cache : (string, modul) Hashtbl.t)
             if SM.mem r.id g.vals then
               error_at r.pos ("duplicate definition of " ^ r.id);
             let ptys, rty, fty = sig_of { env0 with g } r.pos r.params r.ret_ty in
-            let sc = { vars = tvars_of fty; body = fty } in
+            let modid = if prefix = "" then "_root"
+              else String.sub prefix 0 (String.length prefix - 1) in
+            let sc = { vars = tvars_of fty; body = fty;
+                       sym = modid ^ "." ^ r.id } in
             ({ g with vals = SM.add r.id sc g.vals }, SS.add r.id own,
              { f_id = r.id; f_pos = r.pos; f_params = r.params;
                f_ret_ty = r.ret_ty; f_body = r.body; f_ptys = ptys;
@@ -754,20 +772,32 @@ let rec check_module ~(load : loader) ~(cache : (string, modul) Hashtbl.t)
       | DataDef r -> DataDef { pos = r.pos; decl = r.decl; ctors = r.ctors }
       | TypeDef r -> TypeDef { pos = r.pos; decl = r.decl; body = r.body }) p.defns in
   let only names m = SM.filter (fun n _ -> SS.mem n names) m in
+  let typed_prog = Prog { pos = p.pos; imports = p.imports; defns } in
+  order := { cm_id = (if prefix = "" then "_root"
+                      else String.sub prefix 0 (String.length prefix - 1));
+             cm_prog = typed_prog; cm_genv = g } :: !order;
   ({ e_types = only own_types g.types;
      e_ctors = only own_ctors g.ctors;
      e_vals = only own_vals g.vals },
-   Prog { pos = p.pos; imports = p.imports; defns })
+   typed_prog)
 
 (* ---------- entry points ---------- *)
 
-let typecheck_result ?(load : loader = fun _ -> None) (p : unit prog)
-  : (ty prog, string) result =
+(* check a program and everything it imports; modules come out in dependency
+   order, the primary file last *)
+let typecheck_program ?(load : loader = fun _ -> None) (p : unit prog)
+  : (cmodule list, string) result =
   try
-    let _, typed =
-      check_module ~load ~cache:(Hashtbl.create 8) ~stack:[] ~prefix:"" p in
-    Ok typed
+    let order = ref [] in
+    let _ =
+      check_module ~load ~cache:(Hashtbl.create 8) ~order ~stack:[] ~prefix:"" p in
+    Ok (List.rev !order)
   with TypeError msg -> Error msg
+
+let typecheck_result ?load (p : unit prog) : (ty prog, string) result =
+  match typecheck_program ?load p with
+  | Ok mods -> Ok (List.nth mods (List.length mods - 1)).cm_prog
+  | Error msg -> Error msg
 
 let typecheck_prog ?load (p : unit prog) : ty prog option =
   match typecheck_result ?load p with

@@ -94,7 +94,11 @@ rule read = parse
   (* name and lit *)
   | varName as x { VAR x }
   | typeName as x { NAME x }
-  | intLit as x { INT_LIT (int_of_string x) }
+  | intLit as x {
+      match int_of_string_opt x with
+      | Some n -> INT_LIT n
+      | None -> error ("integer literal too large: " ^ x) lexbuf
+    }
   | floatLit as x { FLOAT_LIT (float_of_string x) }
   | charLit {
       let s = Lexing.lexeme lexbuf in
