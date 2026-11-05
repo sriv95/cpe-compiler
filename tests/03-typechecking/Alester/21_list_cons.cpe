@@ -1,0 +1,11 @@
+# สร้างลิสต์ของ Integer
+def getNumbers (): [Integer] =
+    1 :: 2 :: 3 :: []
+
+# สร้างลิสต์ของ String (String คือ [Char])
+def getStrings (): [String] =
+    "Hello" :: "World" :: []
+
+# ฟังก์ชัน main คืนค่า String เสมอ
+def main (arg: [String]): String =
+    "Success"

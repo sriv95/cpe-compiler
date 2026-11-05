@@ -1,4 +1,3 @@
 # 02_bool_logic_ok.cpe
 # EXPECT: pass
 def f (a : Integer) (b : Integer) : Bool = a < b && b >= 0 || a == b
-def main (arg : String) : String = arg

@@ -2,4 +2,3 @@
 # EXPECT: pass
 def apply (f : Integer -> Integer) (x : Integer) : Integer = f x
 def g (x : Integer) : Integer = apply (\ (n : Integer) : Integer => n + x) 10
-def main (arg : String) : String = arg

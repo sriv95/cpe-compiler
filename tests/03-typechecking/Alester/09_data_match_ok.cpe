@@ -7,4 +7,3 @@ def size (t : Tree a) : Integer =
   | Leaf -> 0
   | Node v l r -> 1 + size l + size r
 
-def main (arg : String) : String = arg

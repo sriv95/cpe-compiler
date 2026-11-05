@@ -74,6 +74,7 @@ and 't ptrn =
   | NilPtrn of { prop : 't; pos : pos }
   | UnitPtrn of { prop : 't; pos : pos }
   | IntPtrn of { prop : 't; pos : pos; value : int }
+  | FloatPtrn of { prop : 't; pos : pos; value : float}
   | BoolPtrn of { prop : 't; pos : pos; value : bool }
   | CharPtrn of { prop : 't; pos : pos; value : char }
   | StringPtrn of { prop : 't; pos : pos; value : string }
@@ -89,7 +90,7 @@ let prop_of_expr (e : 't expr) : 't = match e with
 let prop_of_ptrn (p : 't ptrn) : 't = match p with
   | WildcardPtrn r -> r.prop | VarPtrn r -> r.prop | ConsPtrn r -> r.prop
   | PairPtrn r -> r.prop | ListConsPtrn r -> r.prop | NilPtrn r -> r.prop
-  | UnitPtrn r -> r.prop | IntPtrn r -> r.prop | BoolPtrn r -> r.prop
+  | UnitPtrn r -> r.prop | IntPtrn r -> r.prop | FloatPtrn r -> r.prop| BoolPtrn r -> r.prop
   | CharPtrn r -> r.prop | StringPtrn r -> r.prop
 
 (* ---------- pretty-printing (S-expressions) ---------- *)
@@ -213,6 +214,7 @@ and string_of_ptrn = function
   | NilPtrn _ -> "[]"
   | UnitPtrn _ -> "()"
   | IntPtrn r -> string_of_int r.value
+  | FloatPtrn r -> string_of_float r.value
   | BoolPtrn r -> string_of_bool r.value
   | CharPtrn r -> "'" ^ Char.escaped r.value ^ "'"
   | StringPtrn r -> "\"" ^ String.escaped r.value ^ "\""
