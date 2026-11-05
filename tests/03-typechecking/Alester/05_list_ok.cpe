@@ -2,4 +2,3 @@
 # EXPECT: pass
 def f (x : Integer) : [Integer] = x :: x :: []
 def g (xs : [Integer]) : [Integer] = xs ++ (1 :: [])
-def main (arg : String) : String = arg
