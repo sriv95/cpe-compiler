@@ -100,13 +100,15 @@ let check_main_function (env : env) =
       if mty <> expected_main_ty then
         error "main function must have exactly type [String] -> String"
 
-let ty_of (te : typeexpr) : ty =
+let rec ty_of (te : typeexpr) : ty =
   match te with
   | TypeAtom { id = "Integer"; _ } -> TInt
   | TypeAtom { id = "Double"; _ } -> TDouble
   | TypeAtom { id = "Bool"; _ } -> TBool
   | TypeAtom { id = "Char"; _ } -> TChar
   | TypeAtom { id = "()"; _ } -> TUnit
+  | TypeAtom { id = "String"; _ } -> TList TChar (* สเปกระบุว่า String = [Char][cite: 5] *)
+  | ListType r -> TList (ty_of r.elem_ty)        (* จัดการ [String] *)
   | _ -> failwith "unimplemented"
 
 let ty_of_param (p : param) : ty =
@@ -126,6 +128,7 @@ let rec tc (env : env) (e : unit expr) : ty expr =
   | IntLit r -> IntLit { r with prop = TInt }
   | FloatLit r -> FloatLit { r with prop = TDouble }
   | BoolLit r -> BoolLit { r with prop = TBool }
+  | StringLit r -> StringLit { r with prop = TList TChar }
   | VarExpr r ->
       (match SM.find_opt r.id env.vals with
        | Some t -> VarExpr { r with prop = t }
@@ -143,11 +146,11 @@ let rec tc (env : env) (e : unit expr) : ty expr =
       BinOpExpr { r with prop = t; left = l; right = rt }
   | _ -> failwith "unimplemented"
 
-let typecheck_defn (d : unit defn) : ty defn =
+let typecheck_defn (env: env) (d : unit defn) : ty defn =
   match d with
   | FuncDef r ->
       let fty = fun_ty r.params r.ret_ty in
-      let body = tc (add_params (initial_env ()) r.params) r.body in
+      let body = tc (add_params env r.params) r.body in
       let expected = ty_of r.ret_ty and actual = prop_of_expr body in
       if expected <> actual then
         error_at r.pos
@@ -156,11 +159,31 @@ let typecheck_defn (d : unit defn) : ty defn =
       FuncDef { r with prop = fty; body }
   | DataDef _ | TypeDef _ -> failwith "unimplemented"
 
+
+let build_global_env (defns : unit defn list) : env =
+  let env = initial_env () in
+  List.fold_left (fun curr_env def ->
+    match def with
+    | FuncDef r -> 
+        let fty = fun_ty r.params r.ret_ty in
+        { vals = SM.add r.id fty curr_env.vals }
+    | _ -> curr_env (* ข้าม DataDef และ TypeDef ไปก่อนในตอนนี้ *)
+  ) env defns
+
+  
 (* TODO: define your own type checking *)
 let typecheck_prog(p : unit prog) : ty prog option =
   try
     match p with
-    | Prog r -> Some (Prog { r with defns = List.map typecheck_defn r.defns })
+    | Prog r -> 
+      let global_env = build_global_env r.defns in
+        
+      (* 2. เรียกใช้ฟังก์ชัน check_main เพื่อดูว่า main พิมพ์ type ถูกไหม *)
+      check_main_function global_env;
+        
+        (* 3. ส่ง global_env ไปใช้ตรวจ body ของแต่ละฟังก์ชันต่อไป *)
+      let checked_defns = List.map (typecheck_defn global_env) r.defns in
+      Some (Prog { r with defns = checked_defns })
   with TypeError msg -> prerr_endline msg; None
 
 let typecheck(p : unit prog) : bool =
