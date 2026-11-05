@@ -412,6 +412,7 @@ let rec infer_ptrn (env : env) (binds : ty SM.t ref) (expected : ty)
   | NilPtrn r -> NilPtrn { r with prop = ret r.pos (TList (fresh ())) }
   | UnitPtrn r -> UnitPtrn { r with prop = ret r.pos TUnit }
   | IntPtrn r -> IntPtrn { r with prop = ret r.pos TInt }
+  | FloatPtrn r -> FloatPtrn { r with prop = ret r.pos TDouble }
   | BoolPtrn r -> BoolPtrn { r with prop = ret r.pos TBool }
   | CharPtrn r -> CharPtrn { r with prop = ret r.pos TChar }
   | StringPtrn r -> StringPtrn { r with prop = ret r.pos (TList TChar) }
